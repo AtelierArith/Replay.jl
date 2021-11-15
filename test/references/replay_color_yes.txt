@@ -1,0 +1,29 @@
+               [1m[32m_[0m
+   [1m[34m_[0m       [0m_[0m [1m[31m_[1m[32m(_)[1m[35m_[0m     |  Documentation: https://docs.julialang.org
+  [1m[34m(_)[0m     | [1m[31m(_)[0m [1m[35m(_)[0m    |
+   [0m_ _   _| |_  __ _[0m   |  Type "?" for help, "]?" for Pkg help.
+  [0m| | | | | | |/ _` |[0m  |
+  [0m| | |_| | | | (_| |[0m  |  Version 1.6.3 (2021-09-23)
+ [0m_/ |\__'_|_|_|\__'_|[0m  |  Official https://julialang.org/ release
+[0m|__/[0m                   |
+
+[?2004h[0K[32m[1mjulia> [0m[0m[7C[7C2+2[0K[32m[1mjulia> [0m[0m[7C2+2[10C
+[?2004l[0m[0m4
+
+[0K[0K[32m[1mjulia> [0m[0m[7C[7C[?2004h[0K[32m[1mjulia> [0m[0m[7C[7Cprint("")[0K[32m[1mjulia> [0m[0m[7Cprint("")[16C
+[?2004l[0m
+[0K[0K[32m[1mjulia> [0m[0m[7C[7C[?2004h[0K[32m[1mjulia> [0m[0m[7C[7Cdisplay([1])[0K[32m[1mjulia> [0m[0m[7Cdisplay([1])[19C
+[?2004l[0m[0m1-element Vector{Int64}:
+ 1
+
+[0K[0K[32m[1mjulia> [0m[0m[7C[7C[?2004h[0K[32m[1mjulia> [0m[0m[7C[7Cdisplay([1 2; 3 4])[0K[32m[1mjulia> [0m[0m[7Cdisplay([1 2; 3 4])[26C
+[?2004l[0m[0m2×2 Matrix{Int64}:
+ 1  2
+ 3  4
+
+[0K[0K[32m[1mjulia> [0m[0m[7C[7C[?2004h[0K[32m[1mjulia> [0m[0m[7C[7C@time 1+1[0K[32m[1mjulia> [0m[0m[7C@time 1+1[16C
+[?2004l[0m  0.000000 seconds
+[0m2
+
+[0K[0K[32m[1mjulia> [0m[0m[7C[7C[?2004h[0K[32m[1mjulia> [0m[0m[7C[7Cexit()[0K[32m[1mjulia> [0m[0m[7Cexit()[13C
+[?2004l[0m
