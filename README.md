@@ -42,7 +42,8 @@ replay(repl_script, stdout, color = :yes)
 $ julia app.jl
 ```
 
-![](readme_assets/demo.gif)
+![demo](https://user-images.githubusercontent.com/16760547/141813986-d662f944-3377-40ca-872e-b2796dbc3102.gif)
+
 
 You can redirect the output into a file
 
@@ -51,7 +52,7 @@ $ julia app.jl > output.txt
 $ cat output.txt
 ```
 
-![](readme_assets/redirect_output.gif)
+![redirect_output](https://user-images.githubusercontent.com/16760547/141814010-ac335f23-1348-4cba-8f17-6fdf4621efe9.gif)
 
 # Acknowledgements
 
