@@ -22,7 +22,8 @@ Don't worry! Our package `Replay.jl` saves your life!
 # Usage
 
 ```console
-$ cat app.jl
+$ cd path/to/this/repository
+$ cat ./examples/readme/app.jl
 using Replay
 
 repl_script = """
@@ -38,25 +39,50 @@ st
 $CTRL_C
 """
 
-replay(repl_script, stdout, color = :yes)
-$ julia app.jl
+replay(repl_script, stdout, color = :yes, julia_project=@__DIR__, use_ghostwriter=true)
+$ julia --project=@. -e 'using Pkg; Pkg.instantiate()'
+$ julia --project=@. ./examples/readme/app.jl
 ```
 
 ![demo](https://user-images.githubusercontent.com/16760547/141813986-d662f944-3377-40ca-872e-b2796dbc3102.gif)
 
 
-You can redirect the output into a file
+You can redirect the output of the program into a file:
 
 ```julia
-$ julia app.jl > output.txt
+$ julia --project=@. ./examples/readme/app.jl > output.txt
 $ cat output.txt
 ```
 
-![redirect_output](https://user-images.githubusercontent.com/16760547/141814010-ac335f23-1348-4cba-8f17-6fdf4621efe9.gif)
+## Examples
+
+- We provide several examples to testout our Package.
+
+```console
+$ tree examples
+examples
+├── imageinterminal
+│   ├── Project.toml
+│   └── app.jl
+├── readme
+│   ├── Project.toml
+│   └── app.jl
+├── sixel
+│   ├── Project.toml
+│   └── app.jl
+├── unicodeplots
+│   ├── Project.toml
+│   └── app.jl
+└── use_ghostwriter
+    └── app.jl
+```
 
 # Acknowledgements
 
 Replay.jl is based on 
 
 - [FakePTYs.jl](https://github.com/JuliaLang/julia/blob/v1.6.3/test/testhelpers/FakePTYs.jl)
+
+The idea of how to replay julia session comes from
+
 - [generate_precompile.jl](https://github.com/JuliaLang/julia/blob/v1.6.3/contrib/generate_precompile.jl)
