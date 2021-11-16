@@ -59,12 +59,13 @@ function setup_pty(color = :yes; julia_project="@."::AbstractString)
     replproc = withenv(
         "JULIA_HISTORY" => blackhole,
         "JULIA_PROJECT" => "$julia_project",
+        "CI" => get(ENV, "CI", "false"),
         "TERM" => ""
     ) do
         run(
             ```$(julia_exepath)
                 --cpu-target=native --startup-file=no --color=$(color)
-                -e 'using Pkg; Pkg.instantiate();'
+                -e 'if ENV["CI"] != "true"; using Pkg; Pkg.instantiate(); end'
                 -i ```,
             pts, pts, pts; wait = false
         )

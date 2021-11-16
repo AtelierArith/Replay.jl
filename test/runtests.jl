@@ -1,6 +1,8 @@
 using Replay
 using Test
 
+ENV["CI"] = "true"
+
 const repl_script = """
 2+2
 print("")
@@ -10,7 +12,7 @@ display([1 2; 3 4])
 """
 
 @testset "replay: color=yes" begin
-    buf = replay(repl_script, IOBuffer()) # color=:yes by default
+    buf = replay(repl_script, IOBuffer(), julia_project="@.") # color=:yes by default
     out = buf |> take! |> String
     #=
     open(joinpath(@__DIR__, "references", "replay_color_yes.txt"), "w") do f
