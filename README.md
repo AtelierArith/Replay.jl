@@ -1,8 +1,8 @@
-# Replay 
+# Replay
 
 [![CI](https://github.com/AtelierArith/Replay.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/AtelierArith/Replay.jl/actions/workflows/CI.yml) [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://AtelierArith.github.io/Replay.jl/dev)
 
-Replay your instructions on your REPL [something like that](https://github.com/AtelierArith/Replay.jl/issues/1#issuecomment-970441437)
+Replay your instructions on your REPL [something like this](https://github.com/AtelierArith/Replay.jl/issues/1#issuecomment-970441437).
 
 # Why?
 
