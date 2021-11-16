@@ -1,4 +1,4 @@
-               [1m[32m_[0m
+[?25h               [1m[32m_[0m
    [1m[34m_[0m       [0m_[0m [1m[31m_[1m[32m(_)[1m[35m_[0m     |  Documentation: https://docs.julialang.org
   [1m[34m(_)[0m     | [1m[31m(_)[0m [1m[35m(_)[0m    |
    [0m_ _   _| |_  __ _[0m   |  Type "?" for help, "]?" for Pkg help.
