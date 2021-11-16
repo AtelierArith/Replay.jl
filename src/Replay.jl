@@ -28,7 +28,26 @@ function clearlines(H::Integer)
     end
 end
 
-function setup_pty(color = :yes)
+function type_with_ghost(line::AbstractString)
+    juliaprompt = "julia> "
+    clearline()
+    for index in collect(eachindex(line))
+        print(crayon"green bold", juliaprompt)
+        print(crayon"reset")
+        println(join(line[begin:index]))
+        clearlines(1)
+        duration = if 30 < length(line)
+            0.0125
+        elseif 15 < length(line) < 30
+            0.05
+        else
+            0.1
+        end
+        sleep(duration)
+    end
+end
+
+function setup_pty(color = :yes; julia_project="@."::AbstractString)
     if color in [:yes, true]
         color = "yes"
     else
@@ -39,12 +58,13 @@ function setup_pty(color = :yes)
     julia_exepath = joinpath(Sys.BINDIR::String, Base.julia_exename())
     replproc = withenv(
         "JULIA_HISTORY" => blackhole,
-        "JULIA_PROJECT" => "@.",
+        "JULIA_PROJECT" => "$julia_project",
         "TERM" => ""
     ) do
         run(
             ```$(julia_exepath)
                 --cpu-target=native --startup-file=no --color=$(color)
+                -e 'using Pkg; Pkg.instantiate();'
                 -i ```,
             pts, pts, pts; wait = false
         )
@@ -53,23 +73,9 @@ function setup_pty(color = :yes)
     return replproc, ptm
 end
 
-function type_with_ghost(line::AbstractString)
-    juliaprompt = "julia> "
-    clearline()
-    for index in collect(eachindex(line))
-        print(crayon"green bold", juliaprompt)
-        print(crayon"reset")
-        println(join(line[begin:index]))
-        clearlines(1)
-        sleep(0.1)
-    end
-end
-
-replay(repl_script::String, buf::IO = stdout; color = :yes, ghost_mode=false) = replay(split(repl_script::String, '\n'; keepempty = false), buf; color, ghost_mode)
-
-function replay(repl_lines::Vector{T}, buf::IO = stdout; color = :yes, ghost_mode=false) where {T<:AbstractString}
+function replay(repl_lines::Vector{T}, buf::IO = stdout; color = :yes, use_ghostwriter=false, julia_project="@.") where {T<:AbstractString}
     print("\x1b[?25l") # hide cursor
-    replproc, ptm = setup_pty(color)
+    replproc, ptm = setup_pty(color; julia_project)
     # Prepare a background process to copy output from process until `pts` is closed
     output_copy = Base.BufferStream()
     tee = @async try
@@ -92,11 +98,13 @@ function replay(repl_lines::Vector{T}, buf::IO = stdout; color = :yes, ghost_mod
     readuntil(output_copy, "julia>")
     sleep(0.1)
     readavailable(output_copy)
+
+    # let's replay!
     for line in repl_lines
         sleep(1)
         bytesavailable(output_copy) > 0 && readavailable(output_copy)
 
-        ghost_mode && type_with_ghost(line)
+        use_ghostwriter && type_with_ghost(line)
 
         if endswith(line, "\x03")
             write(ptm, line)
@@ -111,7 +119,7 @@ function replay(repl_lines::Vector{T}, buf::IO = stdout; color = :yes, ghost_mod
     end
 
     sleep(1)
-    ghost_mode && type_with_ghost("exit()")
+    use_ghostwriter && type_with_ghost("exit()")
     write(ptm, "exit()\n")
     sleep(1)
     wait(tee)
@@ -120,5 +128,8 @@ function replay(repl_lines::Vector{T}, buf::IO = stdout; color = :yes, ghost_mod
     print("\x1b[?25h") # unhide
     return buf
 end
+
+replay(repl_script::String, buf::IO = stdout; color = :yes, use_ghostwriter=false, julia_project="@.") = replay(split(repl_script::String, '\n'; keepempty = false), buf; color, use_ghostwriter, julia_project)
+
 
 end # module
