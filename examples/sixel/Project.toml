@@ -1,0 +1,5 @@
+[deps]
+ImageIO = "82e4d734-157c-48bb-816b-45c225c6df19"
+ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254"
+Sixel = "45858cf5-a6b0-47a3-bbea-62219f50df47"
+TestImages = "5e47fb64-e119-507b-a336-dd2b206d9990"
