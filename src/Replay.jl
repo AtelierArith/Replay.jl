@@ -62,10 +62,14 @@ function setup_pty(color = :yes; julia_project="@."::AbstractString)
         "CI" => get(ENV, "CI", "false"),
         "TERM" => ""
     ) do
+        # MyNote
+        # -e 'if ENV["CI"] != ... ' is required to pass Pkg.test(), or "IOError: stream is closed or unusable" will happen.
+        # idk why we need print("\x1b[?25l") inside of -e '...'
+        # It seems print("\x1b[?25l") inside of the replay function does not work???
         run(
             ```$(julia_exepath)
                 --cpu-target=native --startup-file=no --color=$(color)
-                -e 'if ENV["CI"] != "true"; using Pkg; Pkg.instantiate(); end'
+                -e 'if ENV["CI"] != "true"; using Pkg; Pkg.instantiate(); print("\x1b[?25l"); end'
                 -i ```,
             pts, pts, pts; wait = false
         )
@@ -75,6 +79,7 @@ function setup_pty(color = :yes; julia_project="@."::AbstractString)
 end
 
 function replay(repl_lines::Vector{T}, buf::IO = stdout; color = :yes, use_ghostwriter=false, julia_project="@.") where {T<:AbstractString}
+    # c.f. MyNote above
     print("\x1b[?25l") # hide cursor
     replproc, ptm = setup_pty(color; julia_project)
     # Prepare a background process to copy output from process until `pts` is closed
