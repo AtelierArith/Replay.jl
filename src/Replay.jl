@@ -23,11 +23,9 @@ function clearline(;move_up::Bool=false)
 end
 
 function clearlines(H::Integer)
-    buf = IOBuffer()
     for i in 1:H
         clearline(move_up=true)
     end
-    print(buf |> take! |> String)
 end
 
 function setup_pty(color = :yes)
@@ -67,11 +65,10 @@ function type_with_ghost(line::AbstractString)
     end
 end
 
-replay(repl_script::String, buf::IO = stdout; color = :yes) = replay(split(repl_script::String, '\n'; keepempty = false), buf; color)
+replay(repl_script::String, buf::IO = stdout; color = :yes, ghost_mode=false) = replay(split(repl_script::String, '\n'; keepempty = false), buf; color, ghost_mode)
 
-function replay(repl_lines::Vector{T}, buf::IO = stdout; color = :yes) where {T<:AbstractString}
+function replay(repl_lines::Vector{T}, buf::IO = stdout; color = :yes, ghost_mode=false) where {T<:AbstractString}
     print("\x1b[?25l") # hide cursor
-
     replproc, ptm = setup_pty(color)
     # Prepare a background process to copy output from process until `pts` is closed
     output_copy = Base.BufferStream()
@@ -99,7 +96,7 @@ function replay(repl_lines::Vector{T}, buf::IO = stdout; color = :yes) where {T<
         sleep(1)
         bytesavailable(output_copy) > 0 && readavailable(output_copy)
 
-        type_with_ghost(line)
+        ghost_mode && type_with_ghost(line)
 
         if endswith(line, "\x03")
             write(ptm, line)
@@ -114,7 +111,7 @@ function replay(repl_lines::Vector{T}, buf::IO = stdout; color = :yes) where {T<
     end
 
     sleep(1)
-    type_with_ghost("exit()")
+    ghost_mode && type_with_ghost("exit()")
     write(ptm, "exit()\n")
     sleep(1)
     wait(tee)
