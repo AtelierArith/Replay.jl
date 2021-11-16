@@ -1,8 +1,8 @@
 # Replay 
 
-[![CI](https://github.com/AtelierArith/Replay.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/AtelierArith/Replay.jl/actions/workflows/CI.yml)
+[![CI](https://github.com/AtelierArith/Replay.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/AtelierArith/Replay.jl/actions/workflows/CI.yml) [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://AtelierArith.github.io/Replay.jl/dev)
 
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://AtelierArith.github.io/Replay.jl/dev)
+Replay your instructions on your REPL [something like that](https://github.com/AtelierArith/Replay.jl/issues/1#issuecomment-970441437)
 
 # Why?
 
@@ -48,7 +48,7 @@ $ julia --project=@. -e 'using Pkg; Pkg.instantiate()'
 $ julia --project=@. ./examples/readme/app.jl
 ```
 
-![demo](https://user-images.githubusercontent.com/16760547/141813986-d662f944-3377-40ca-872e-b2796dbc3102.gif)
+![demo](https://user-images.githubusercontent.com/16760547/142026114-15029088-4f3e-4404-beba-e544f3a5a667.gif)
 
 
 You can redirect the output of the program into a file:
