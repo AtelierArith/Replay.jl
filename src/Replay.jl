@@ -14,7 +14,7 @@ const LEFT_ARROW = "\e[D"
 export CTRL_C, UP_ARROW, DOWN_ARROW, RIGHT_ARROW, LEFT_ARROW
 export replay
 
-function clearline(;move_up::Bool=false)
+function clearline(; move_up::Bool = false)
     buf = IOBuffer()
     print(buf, "\x1b[2K") # clear line
     print(buf, "\x1b[999D") # rollback the cursor
@@ -23,8 +23,8 @@ function clearline(;move_up::Bool=false)
 end
 
 function clearlines(H::Integer)
-    for i in 1:H
-        clearline(move_up=true)
+    for i = 1:H
+        clearline(move_up = true)
     end
 end
 
@@ -47,7 +47,7 @@ function type_with_ghost(line::AbstractString)
     end
 end
 
-function setup_pty(color = :yes; julia_project="@."::AbstractString)
+function setup_pty(color = :yes; julia_project = "@."::AbstractString)
     if color in [:yes, true]
         color = "yes"
     else
@@ -78,7 +78,7 @@ function setup_pty(color = :yes; julia_project="@."::AbstractString)
     return replproc, ptm
 end
 
-function replay(repl_lines::Vector{T}, buf::IO = stdout; color = :yes, use_ghostwriter=false, julia_project="@.") where {T<:AbstractString}
+function replay(repl_lines::Vector{T}, buf::IO = stdout; color = :yes, use_ghostwriter = false, julia_project = "@.") where {T<:AbstractString}
     # c.f. MyNote above
     print("\x1b[?25l") # hide cursor
     replproc, ptm = setup_pty(color; julia_project)
@@ -135,7 +135,6 @@ function replay(repl_lines::Vector{T}, buf::IO = stdout; color = :yes, use_ghost
     return buf
 end
 
-replay(repl_script::String, buf::IO = stdout; color = :yes, use_ghostwriter=false, julia_project="@.") = replay(split(repl_script::String, '\n'; keepempty = false), buf; color, use_ghostwriter, julia_project)
-
+replay(repl_script::String, buf::IO = stdout; color = :yes, use_ghostwriter = false, julia_project = "@.") = replay(split(repl_script::String, '\n'; keepempty = false), buf; color, use_ghostwriter, julia_project)
 
 end # module
