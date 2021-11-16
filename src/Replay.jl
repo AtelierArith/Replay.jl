@@ -1,5 +1,7 @@
 module Replay
 
+using Crayons
+
 include("FakePTYs.jl")
 using .FakePTYs: open_fake_pty
 
@@ -12,6 +14,22 @@ const LEFT_ARROW = "\e[D"
 export CTRL_C, UP_ARROW, DOWN_ARROW, RIGHT_ARROW, LEFT_ARROW
 export replay
 
+function clearline(;move_up::Bool=false)
+    buf = IOBuffer()
+    print(buf, "\x1b[2K") # clear line
+    print(buf, "\x1b[999D") # rollback the cursor
+    move_up && print(buf, "\x1b[1A") # move up
+    print(buf |> take! |> String)
+end
+
+function clearlines(H::Integer)
+    buf = IOBuffer()
+    for i in 1:H
+        clearline(move_up=true)
+    end
+    print(buf |> take! |> String)
+end
+
 function setup_pty(color = :yes)
     if color in [:yes, true]
         color = "yes"
@@ -23,15 +41,12 @@ function setup_pty(color = :yes)
     julia_exepath = joinpath(Sys.BINDIR::String, Base.julia_exename())
     replproc = withenv(
         "JULIA_HISTORY" => blackhole,
-        "JULIA_PROJECT" => nothing, # remove from environment
-        "JULIA_LOAD_PATH" => Sys.iswindows() ? "@;@stdlib" : "@:@stdlib",
-        "JULIA_PKG_PRECOMPILE_AUTO" => "0",
+        "JULIA_PROJECT" => "@.",
         "TERM" => ""
     ) do
         run(
-            ```$(julia_exepath) -O0
+            ```$(julia_exepath)
                 --cpu-target=native --startup-file=no --color=$(color)
-                -e 'import REPL; REPL.Terminals.is_precompiling[] = true'
                 -i ```,
             pts, pts, pts; wait = false
         )
@@ -40,9 +55,23 @@ function setup_pty(color = :yes)
     return replproc, ptm
 end
 
+function type_with_ghost(line::AbstractString)
+    juliaprompt = "julia> "
+    clearline()
+    for index in collect(eachindex(line))
+        print(crayon"green bold", juliaprompt)
+        print(crayon"reset")
+        println(join(line[begin:index]))
+        clearlines(1)
+        sleep(0.1)
+    end
+end
+
 replay(repl_script::String, buf::IO = stdout; color = :yes) = replay(split(repl_script::String, '\n'; keepempty = false), buf; color)
 
 function replay(repl_lines::Vector{T}, buf::IO = stdout; color = :yes) where {T<:AbstractString}
+    print("\x1b[?25l") # hide cursor
+
     replproc, ptm = setup_pty(color)
     # Prepare a background process to copy output from process until `pts` is closed
     output_copy = Base.BufferStream()
@@ -66,10 +95,12 @@ function replay(repl_lines::Vector{T}, buf::IO = stdout; color = :yes) where {T<
     readuntil(output_copy, "julia>")
     sleep(0.1)
     readavailable(output_copy)
-
     for line in repl_lines
         sleep(1)
         bytesavailable(output_copy) > 0 && readavailable(output_copy)
+
+        type_with_ghost(line)
+
         if endswith(line, "\x03")
             write(ptm, line)
         else
@@ -81,11 +112,15 @@ function replay(repl_lines::Vector{T}, buf::IO = stdout; color = :yes) where {T<
         readuntil(output_copy, "\n")
         readuntil(output_copy, "> ")
     end
-    println()
+
+    sleep(1)
+    type_with_ghost("exit()")
     write(ptm, "exit()\n")
+    sleep(1)
     wait(tee)
     success(replproc) || Base.pipeline_error(replproc)
     close(ptm)
+    print("\x1b[?25h") # unhide
     return buf
 end
 
