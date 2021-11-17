@@ -4,7 +4,7 @@ CurrentModule = Replay
 
 # Replay
 
-Documentation for [Replay](https://github.com/terasakisatoshi/Replay.jl).
+Documentation for [Replay](https://github.com/AtelierArith/Replay.jl).
 
 ```@index
 ```
