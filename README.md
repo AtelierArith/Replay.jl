@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/AtelierArith/Replay.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/AtelierArith/Replay.jl/actions/workflows/CI.yml) [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://AtelierArith.github.io/Replay.jl/dev)
 
-Replay your instructions on your REPL [something like this](https://github.com/AtelierArith/Replay.jl/issues/1#issuecomment-970441437).
+Replay your REPL instructions [something like this](https://github.com/AtelierArith/Replay.jl/issues/1#issuecomment-970441437).
 
 # Why?
 
@@ -57,6 +57,8 @@ You can redirect the output of the program into a file:
 $ julia --project=@. ./examples/readme/app.jl > output.txt
 $ cat output.txt
 ```
+
+Tips: you can set `replay(instructions; color=:no)` as necessary.
 
 ## Examples
 
