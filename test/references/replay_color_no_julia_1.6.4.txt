@@ -3,7 +3,7 @@
   (_)     | (_) (_)    |
    _ _   _| |_  __ _   |  Type "?" for help, "]?" for Pkg help.
   | | | | | | |/ _` |  |
-  | | |_| | | | (_| |  |  Version 1.6.3 (2021-09-23)
+  | | |_| | | | (_| |  |  Version 1.6.4 (2021-11-19)
  _/ |\__'_|_|_|\__'_|  |  Official https://julialang.org/ release
 |__/                   |
 
