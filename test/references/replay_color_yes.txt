@@ -21,9 +21,5 @@
  1  2
  3  4
 
-[0K[0K[32m[1mjulia> [0m[0m[7C[7C[?2004h[0K[32m[1mjulia> [0m[0m[7C[7C@time 1+1[0K[32m[1mjulia> [0m[0m[7C@time 1+1[16C
-[?2004l[0m  0.000000 seconds
-[0m2
-
 [0K[0K[32m[1mjulia> [0m[0m[7C[7C[?2004h[0K[32m[1mjulia> [0m[0m[7C[7Cexit()[0K[32m[1mjulia> [0m[0m[7Cexit()[13C
 [?2004l[0m
