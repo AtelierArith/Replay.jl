@@ -8,7 +8,6 @@ const repl_script = """
 print("")
 display([1])
 display([1 2; 3 4])
-@time 1+1
 """
 
 @testset "replay: color=yes" begin
