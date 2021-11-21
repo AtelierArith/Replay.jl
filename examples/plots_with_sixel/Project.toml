@@ -1,4 +1,5 @@
 [deps]
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
+ImageIO = "82e4d734-157c-48bb-816b-45c225c6df19"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 Sixel = "45858cf5-a6b0-47a3-bbea-62219f50df47"
