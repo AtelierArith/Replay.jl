@@ -6,7 +6,9 @@ Replay your REPL instructions [something like this](https://github.com/AtelierAr
 
 # Why?
 
-Let's assume you have to record(e.g. take a screenshot) demo that types 9 lines like below:
+# Introduction
+
+Let’s assume you have to record your screen to explain something about Julia topics e.g. how to use REPL, how to use your great package on Julia REPL etc… You are supposed to input your source code by hand line by line. Imagine that you type the following lines.
 
 ```
 julia> 2+2
