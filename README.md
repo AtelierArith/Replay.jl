@@ -103,3 +103,13 @@ The idea of how to replay julia session comes from
 
 ![](docs/src/assets/logo.svg)
 
+# Appendix
+
+## Blog post
+
+- [Julia Discourse](https://discourse.julialang.org/t/ann-replay-jl-replay-instructions/71655)
+- [Zenn.dev (Japanese blog post)](https://zenn.dev/terasakisatoshi/articles/b32638b8f6a34a)
+
+## YouTube
+- [Why We Created (Replay.jl for) Julia](https://www.youtube.com/watch?v=HNOK1sK-F3I)
+- [Making Replay.jl](https://www.youtube.com/watch?v=KlXNVgv6b24)
