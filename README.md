@@ -4,7 +4,6 @@
 
 Replay your REPL instructions [something like this](https://github.com/AtelierArith/Replay.jl/issues/1#issuecomment-970441437).
 
-# Why?
 ![](docs/src/assets/logo-dark.svg)
 
 # Introduction
@@ -91,7 +90,7 @@ examples
 
 # Acknowledgements
 
-Replay.jl is based on 
+Replay.jl is based on
 
 - [FakePTYs.jl](https://github.com/JuliaLang/julia/blob/v1.6.3/test/testhelpers/FakePTYs.jl)
 
