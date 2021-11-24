@@ -4,9 +4,11 @@
 
 Replay your REPL instructions [something like this](https://github.com/AtelierArith/Replay.jl/issues/1#issuecomment-970441437).
 
-# Why?
+![](docs/src/assets/logo-dark.svg)
 
-Let's assume you have to record(e.g. take a screenshot) demo that types 9 lines like below:
+# Introduction
+
+Let’s assume you have to record your screen to explain something about Julia topics e.g. how to use REPL, how to use your great package on Julia REPL etc… You are supposed to input your source code by hand line by line. Imagine that you type the following lines.
 
 ```
 julia> 2+2
@@ -68,27 +70,46 @@ Tips: you can set `replay(instructions; color=:no)` as necessary.
 $ tree examples
 examples
 ├── imageinterminal
-│   ├── Project.toml
-│   └── app.jl
+│   ├── Project.toml
+│   └── app.jl
+├── plots_with_sixel
+│   ├── Project.toml
+│   └── app.jl
 ├── readme
-│   ├── Project.toml
-│   └── app.jl
+│   ├── Project.toml
+│   └── app.jl
 ├── sixel
-│   ├── Project.toml
-│   └── app.jl
+│   ├── Project.toml
+│   └── app.jl
 ├── unicodeplots
-│   ├── Project.toml
-│   └── app.jl
+│   ├── Project.toml
+│   └── app.jl
 └── use_ghostwriter
     └── app.jl
 ```
 
 # Acknowledgements
 
-Replay.jl is based on 
+Replay.jl is based on
 
 - [FakePTYs.jl](https://github.com/JuliaLang/julia/blob/v1.6.3/test/testhelpers/FakePTYs.jl)
 
 The idea of how to replay julia session comes from
 
 - [generate_precompile.jl](https://github.com/JuliaLang/julia/blob/v1.6.3/contrib/generate_precompile.jl)
+
+@hyrodium san provided an excellent logo for our package.
+- See [this PR #7](https://github.com/AtelierArith/Replay.jl/pull/7).
+
+![](docs/src/assets/logo.svg)
+
+# Appendix
+
+## Blog post
+
+- [Julia Discourse](https://discourse.julialang.org/t/ann-replay-jl-replay-instructions/71655)
+- [Zenn.dev (Japanese blog post)](https://zenn.dev/terasakisatoshi/articles/b32638b8f6a34a)
+
+## YouTube
+- [Why We Created (Replay.jl for) Julia](https://www.youtube.com/watch?v=HNOK1sK-F3I)
+- [Making Replay.jl](https://www.youtube.com/watch?v=KlXNVgv6b24)
