@@ -5,6 +5,7 @@
 Replay your REPL instructions [something like this](https://github.com/AtelierArith/Replay.jl/issues/1#issuecomment-970441437).
 
 # Why?
+![](docs/src/assets/logo-dark.svg)
 
 # Introduction
 
@@ -94,3 +95,9 @@ Replay.jl is based on
 The idea of how to replay julia session comes from
 
 - [generate_precompile.jl](https://github.com/JuliaLang/julia/blob/v1.6.3/contrib/generate_precompile.jl)
+
+@hyrodium san provided an excellent logo for our package.
+- See [this PR #7](https://github.com/AtelierArith/Replay.jl/pull/7).
+
+![](docs/src/assets/logo.svg)
+
