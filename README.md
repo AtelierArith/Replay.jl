@@ -70,22 +70,26 @@ Tips: you can set `replay(instructions; color=:no)` as necessary.
 $ tree examples
 examples
 ├── imageinterminal
-│   ├── Project.toml
-│   └── app.jl
+│   ├── Project.toml
+│   └── app.jl
 ├── plots_with_sixel
-│   ├── Project.toml
-│   └── app.jl
+│   ├── Project.toml
+│   └── app.jl
+├── quietmode
+│   └── app.jl
 ├── readme
-│   ├── Project.toml
-│   └── app.jl
+│   ├── Project.toml
+│   └── app.jl
 ├── sixel
-│   ├── Project.toml
-│   └── app.jl
+│   ├── Project.toml
+│   └── app.jl
 ├── unicodeplots
-│   ├── Project.toml
-│   └── app.jl
+│   ├── Project.toml
+│   └── app.jl
 └── use_ghostwriter
     └── app.jl
+
+7 directories, 12 files
 ```
 
 # Acknowledgements
