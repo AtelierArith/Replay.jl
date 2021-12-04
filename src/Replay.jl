@@ -47,7 +47,7 @@ function type_with_ghost(line::AbstractString)
     end
 end
 
-function setup_pty(color = :yes; julia_project = "@."::AbstractString)
+function setup_pty(color = :yes; julia_project = "@."::AbstractString, cmd::String = "")
     if color in [:yes, true]
         color = "yes"
     else
@@ -70,7 +70,9 @@ function setup_pty(color = :yes; julia_project = "@."::AbstractString)
             ```$(julia_exepath)
                 --cpu-target=native --startup-file=no --color=$(color)
                 -e 'if ENV["CI"] != "true"; using Pkg; Pkg.instantiate(); print("\x1b[?25l"); end'
-                -i ```,
+                -i
+                $(cmd)
+            ```,
             pts, pts, pts; wait = false
         )
     end
@@ -78,10 +80,10 @@ function setup_pty(color = :yes; julia_project = "@."::AbstractString)
     return replproc, ptm
 end
 
-function replay(repl_lines::Vector{T}, buf::IO = stdout; color = :yes, use_ghostwriter = false, julia_project = "@.") where {T<:AbstractString}
+function replay(repl_lines::Vector{<:AbstractString}, buf::IO = stdout; color = :yes, use_ghostwriter = false, julia_project = "@.", cmd::String="")
     # c.f. MyNote above
     print("\x1b[?25l") # hide cursor
-    replproc, ptm = setup_pty(color; julia_project)
+    replproc, ptm = setup_pty(color; julia_project, cmd)
     # Prepare a background process to copy output from process until `pts` is closed
     output_copy = Base.BufferStream()
     tee = @async try
@@ -135,6 +137,6 @@ function replay(repl_lines::Vector{T}, buf::IO = stdout; color = :yes, use_ghost
     return buf
 end
 
-replay(repl_script::String, buf::IO = stdout; color = :yes, use_ghostwriter = false, julia_project = "@.") = replay(split(repl_script::String, '\n'; keepempty = false), buf; color, use_ghostwriter, julia_project)
+replay(repl_script::String, buf::IO = stdout; color = :yes, use_ghostwriter = false, julia_project = "@.", cmd::String="") = replay(split(repl_script::String, '\n'; keepempty = false), buf; color, use_ghostwriter, julia_project, cmd)
 
 end # module
