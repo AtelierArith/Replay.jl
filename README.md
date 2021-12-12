@@ -72,6 +72,9 @@ examples
 ├── imageinterminal
 │   ├── Project.toml
 │   └── app.jl
+├── ohmyrepl
+│   ├── Project.toml
+│   └── app.jl
 ├── plots_with_sixel
 │   ├── Project.toml
 │   └── app.jl
@@ -86,10 +89,14 @@ examples
 ├── unicodeplots
 │   ├── Project.toml
 │   └── app.jl
+├── unicodeplots_animated
+│   ├── Project.toml
+│   ├── app.jl
+│   └── lemma.jl
 └── use_ghostwriter
     └── app.jl
 
-7 directories, 12 files
+9 directories, 17 files
 ```
 
 # Acknowledgements
