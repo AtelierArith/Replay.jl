@@ -69,7 +69,12 @@ Tips: you can set `replay(instructions; color=:no)` as necessary.
 ```console
 $ tree examples
 examples
+├── helloworld
+│   └── app.jl
 ├── imageinterminal
+│   ├── Project.toml
+│   └── app.jl
+├── iris
 │   ├── Project.toml
 │   └── app.jl
 ├── ohmyrepl
@@ -96,7 +101,7 @@ examples
 └── use_ghostwriter
     └── app.jl
 
-9 directories, 17 files
+11 directories, 20 files
 ```
 
 # Acknowledgements
