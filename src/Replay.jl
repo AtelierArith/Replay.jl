@@ -163,6 +163,6 @@ function replay(
     return buf
 end
 
-function replay(repl_script::AbstractString, args...; kwargs...) = replay(split(string(repl_script), '\n'; keepempty = false), args...; kwargs...)
+replay(repl_script::AbstractString, args...; kwargs...) = replay(split(string(repl_script), '\n'; keepempty = false), args...; kwargs...)
 
 end # module
