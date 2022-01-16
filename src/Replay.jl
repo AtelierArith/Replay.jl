@@ -96,7 +96,13 @@ function setup_pty(color = :yes; julia_project = "@."::AbstractString, cmd::Stri
     return replproc, ptm
 end
 
-function replay(repl_lines::Vector{<:AbstractString}, buf::IO = stdout; color = :yes, use_ghostwriter = false, julia_project = "@.", cmd::String="")
+function replay(
+    instructions::Vector{<:AbstractString}, buf::IO = stdout;
+    color = :yes, 
+    use_ghostwriter = false, 
+    julia_project = "@.", 
+    cmd::String = "",
+)
     # c.f. MyNote above
     print("\x1b[?25l") # hide cursor
     replproc, ptm = setup_pty(color; julia_project, cmd)
@@ -157,6 +163,6 @@ function replay(repl_lines::Vector{<:AbstractString}, buf::IO = stdout; color = 
     return buf
 end
 
-replay(repl_script::String, buf::IO = stdout; color = :yes, use_ghostwriter = false, julia_project = "@.", cmd::String="") = replay(split(repl_script::String, '\n'; keepempty = false), buf; color, use_ghostwriter, julia_project, cmd)
+function replay(repl_script::AbstractString, args...; kwargs...) = replay(split(string(repl_script), '\n'; keepempty = false), args...; kwargs...)
 
 end # module
