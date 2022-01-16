@@ -3,7 +3,7 @@ using Replay
 instructions = [
     """
     function greet(msg::String="Hello!")
-    	println(msg)
+        println(msg)
     end
     """,
     "greet()",

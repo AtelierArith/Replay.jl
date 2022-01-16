@@ -32,13 +32,14 @@ function type_with_ghost_core(line::AbstractString; display_prompt=false)
     juliaprompt = "julia> "
     spacestring = " "
     dummy = repeat(spacestring, length(juliaprompt))
+    if !display_prompt
+        line = dummy * line
+    end
     clearline()
     for index in collect(eachindex(line))
         if display_prompt
             print(crayon"green bold", juliaprompt)
             print(crayon"reset")
-        else
-            print(dummy)
         end
         println(join(line[begin:index]))
         clearline(move_up=true)
@@ -57,7 +58,8 @@ function type_with_ghost(repl_script::AbstractString)
     lines = split(repl_script::String, '\n'; keepempty = false)
     H = length(lines)
     for (i, line) in enumerate(lines)
-        type_with_ghost_core(line, display_prompt = (i == 1))
+        display_prompt = (i == 1)
+        type_with_ghost_core(line; display_prompt)
         println()
     end
     clearlines(H)
