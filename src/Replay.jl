@@ -130,7 +130,7 @@ function replay(repl_lines::Vector{<:AbstractString}, buf::IO = stdout; color = 
 
         use_ghostwriter && type_with_ghost(line)
 
-        if endswith(line, "\x03")
+        if endswith(line, CTRL_C)
             write(ptm, line)
         else
             write(ptm, line, "\n")
