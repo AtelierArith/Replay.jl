@@ -133,7 +133,11 @@ function replay(repl_lines::Vector{<:AbstractString}, buf::IO = stdout; color = 
         if endswith(line, CTRL_C)
             write(ptm, line)
         else
-            write(ptm, line, "\n")
+            if length(split(string(line), '\n'; keepempty = false)) == 1
+                write(ptm, line, "\n")
+            else
+                write(ptm, line)
+            end
         end
         readuntil(output_copy, "\n")
         # wait for the next prompt-like to appear
