@@ -124,19 +124,19 @@ function replay(repl_lines::Vector{<:AbstractString}, buf::IO = stdout; color = 
     readavailable(output_copy)
 
     # let's replay!
-    for line in repl_lines
+    for cell in instructions
         sleep(1)
         bytesavailable(output_copy) > 0 && readavailable(output_copy)
 
-        use_ghostwriter && type_with_ghost(line)
+        use_ghostwriter && type_with_ghost(cell)
 
-        if endswith(line, CTRL_C)
-            write(ptm, line)
+        if endswith(cell, CTRL_C)
+            write(ptm, cell)
         else
-            if length(split(string(line), '\n'; keepempty = false)) == 1
-                write(ptm, line, "\n")
+            if length(split(string(cell), '\n'; keepempty = false)) == 1
+                write(ptm, cell, "\n")
             else
-                write(ptm, line)
+                write(ptm, cell)
             end
         end
         readuntil(output_copy, "\n")
