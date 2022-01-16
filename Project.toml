@@ -1,7 +1,7 @@
 name = "Replay"
 uuid = "dd78c5bf-19c4-4e9c-96ce-c3ec745c7812"
 authors = ["Satoshi Terasaki <terasakisatoshi.math@gmail.com> and contributors"]
-version = "0.2.1"
+version = "0.3.0"
 
 [deps]
 Crayons = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
