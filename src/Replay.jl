@@ -28,14 +28,21 @@ function clearlines(H::Integer)
     end
 end
 
-function type_with_ghost(line::AbstractString)
+function type_with_ghost_core(line::AbstractString; display_prompt=false)
     juliaprompt = "julia> "
+    spacestring = " "
+    dummy = repeat(spacestring, length(juliaprompt))
+    if !display_prompt
+        line = dummy * line
+    end
     clearline()
     for index in collect(eachindex(line))
-        print(crayon"green bold", juliaprompt)
-        print(crayon"reset")
+        if display_prompt
+            print(crayon"green bold", juliaprompt)
+            print(crayon"reset")
+        end
         println(join(line[begin:index]))
-        clearlines(1)
+        clearline(move_up=true)
         duration = if 30 < length(line)
             0.0125
         elseif 15 < length(line) < 30
@@ -45,6 +52,17 @@ function type_with_ghost(line::AbstractString)
         end
         sleep(duration)
     end
+end
+
+function type_with_ghost(repl_script::AbstractString)
+    lines = split(repl_script::String, '\n'; keepempty = false)
+    H = length(lines)
+    for (i, line) in enumerate(lines)
+        display_prompt = (i == 1)
+        type_with_ghost_core(line; display_prompt)
+        println()
+    end
+    clearlines(H)
 end
 
 function setup_pty(color = :yes; julia_project = "@."::AbstractString, cmd::String = "")
@@ -80,7 +98,13 @@ function setup_pty(color = :yes; julia_project = "@."::AbstractString, cmd::Stri
     return replproc, ptm
 end
 
-function replay(repl_lines::Vector{<:AbstractString}, buf::IO = stdout; color = :yes, use_ghostwriter = false, julia_project = "@.", cmd::String="")
+function replay(
+    instructions::Vector{<:AbstractString}, buf::IO = stdout;
+    color = :yes, 
+    use_ghostwriter = false, 
+    julia_project = "@.", 
+    cmd::String = "",
+)
     # c.f. MyNote above
     print("\x1b[?25l") # hide cursor
     replproc, ptm = setup_pty(color; julia_project, cmd)
@@ -108,16 +132,20 @@ function replay(repl_lines::Vector{<:AbstractString}, buf::IO = stdout; color = 
     readavailable(output_copy)
 
     # let's replay!
-    for line in repl_lines
+    for cell in instructions
         sleep(1)
         bytesavailable(output_copy) > 0 && readavailable(output_copy)
 
-        use_ghostwriter && type_with_ghost(line)
+        use_ghostwriter && type_with_ghost(cell)
 
-        if endswith(line, "\x03")
-            write(ptm, line)
+        if endswith(cell, CTRL_C)
+            write(ptm, cell)
         else
-            write(ptm, line, "\n")
+            if length(split(string(cell), '\n'; keepempty = false)) == 1
+                write(ptm, cell, "\n")
+            else
+                write(ptm, cell)
+            end
         end
         readuntil(output_copy, "\n")
         # wait for the next prompt-like to appear
@@ -137,6 +165,6 @@ function replay(repl_lines::Vector{<:AbstractString}, buf::IO = stdout; color = 
     return buf
 end
 
-replay(repl_script::String, buf::IO = stdout; color = :yes, use_ghostwriter = false, julia_project = "@.", cmd::String="") = replay(split(repl_script::String, '\n'; keepempty = false), buf; color, use_ghostwriter, julia_project, cmd)
+replay(repl_script::AbstractString, args...; kwargs...) = replay(split(string(repl_script), '\n'; keepempty = false), args...; kwargs...)
 
 end # module
