@@ -88,6 +88,8 @@ See [This issue](https://github.com/AtelierArith/Replay.jl/issues/23) to learn m
 ```console
 $ tree examples
 examples
+├── disable_color
+│   └── app.jl
 ├── helloworld
 │   └── app.jl
 ├── imageinterminal
@@ -120,7 +122,7 @@ examples
 └── use_ghostwriter
     └── app.jl
 
-11 directories, 20 files
+12 directories, 21 files
 ```
 
 # Breaking Change
