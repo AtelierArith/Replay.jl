@@ -82,10 +82,11 @@ function setup_pty(julia_project = "@."::AbstractString, cmd=String = "--color=y
         run(
             ```$(julia_exepath)
                 --cpu-target=native --startup-file=no --color=$(color)
-                -e 'if ENV["CI"] != "true"; using Pkg; Pkg.instantiate(); print("\x1b[?25l"); end'
                 -i
                 $(cmd)
             ```,
+        # Install packages
+        run(`$(julia_exepath) -e 'using Pkg; Pkg.instantiate()'`)
             pts, pts, pts; wait = false
         )
     end
