@@ -1,5 +1,6 @@
 [deps]
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 OhMyREPL = "5fb14364-9ced-5910-84b2-373655c76a03"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 RDatasets = "ce6b1742-4840-55fa-b093-852dadbb1d8b"
