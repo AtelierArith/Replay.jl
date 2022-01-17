@@ -72,21 +72,12 @@ function setup_pty(julia_project = "@."::AbstractString, cmd=String = "--color=y
     replproc = withenv(
         "JULIA_HISTORY" => blackhole,
         "JULIA_PROJECT" => "$julia_project",
-        "CI" => get(ENV, "CI", "false"),
         "TERM" => ""
     ) do
-        # MyNote
-        # -e 'if ENV["CI"] != ... ' is required to pass Pkg.test(), or "IOError: stream is closed or unusable" will happen.
-        # idk why we need print("\x1b[?25l") inside of -e '...'
-        # It seems print("\x1b[?25l") inside of the replay function does not work???
-        run(
-            ```$(julia_exepath)
-                --cpu-target=native --startup-file=no --color=$(color)
-                -i
-                $(cmd)
-            ```,
         # Install packages
         run(`$(julia_exepath) -e 'using Pkg; Pkg.instantiate()'`)
+        # Initialize REPL
+        run(```$(julia_exepath) $(split(cmd))```,
             pts, pts, pts; wait = false
         )
     end
