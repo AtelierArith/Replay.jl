@@ -6,4 +6,4 @@ using Sixel
 sixel_encode(testimage("mandril_color"))
 """
 
-replay(instructions, julia_project=@__DIR__)
+replay(instructions, julia_project = @__DIR__)

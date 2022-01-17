@@ -28,7 +28,7 @@ function clearlines(H::Integer)
     end
 end
 
-function type_with_ghost_core(line::AbstractString; display_prompt=false)
+function type_with_ghost_core(line::AbstractString; display_prompt = false)
     juliaprompt = "julia> "
     spacestring = " "
     dummy = repeat(spacestring, length(juliaprompt))
@@ -42,7 +42,7 @@ function type_with_ghost_core(line::AbstractString; display_prompt=false)
             print(crayon"reset")
         end
         println(join(line[begin:index]))
-        clearline(move_up=true)
+        clearline(move_up = true)
         duration = if 30 < length(line)
             0.0125
         elseif 15 < length(line) < 30
@@ -55,7 +55,7 @@ function type_with_ghost_core(line::AbstractString; display_prompt=false)
 end
 
 function type_with_ghost(repl_script::AbstractString)
-    lines = split(repl_script::String, '\n'; keepempty = false)
+    lines = split(String(repl_script), '\n'; keepempty = false)
     H = length(lines)
     for (i, line) in enumerate(lines)
         display_prompt = (i == 1)
@@ -78,7 +78,7 @@ function setup_pty(color = :yes; julia_project = "@."::AbstractString, cmd::Stri
         "JULIA_HISTORY" => blackhole,
         "JULIA_PROJECT" => "$julia_project",
         "CI" => get(ENV, "CI", "false"),
-        "TERM" => ""
+        "TERM" => "",
     ) do
         # MyNote
         # -e 'if ENV["CI"] != ... ' is required to pass Pkg.test(), or "IOError: stream is closed or unusable" will happen.
@@ -91,7 +91,10 @@ function setup_pty(color = :yes; julia_project = "@."::AbstractString, cmd::Stri
                 -i
                 $(cmd)
             ```,
-            pts, pts, pts; wait = false
+            pts,
+            pts,
+            pts;
+            wait = false,
         )
     end
     Base.close_stdio(pts)
@@ -99,10 +102,11 @@ function setup_pty(color = :yes; julia_project = "@."::AbstractString, cmd::Stri
 end
 
 function replay(
-    instructions::Vector{<:AbstractString}, buf::IO = stdout;
-    color = :yes, 
-    use_ghostwriter = false, 
-    julia_project = "@.", 
+    instructions::Vector{<:AbstractString},
+    buf::IO = stdout;
+    color = :yes,
+    use_ghostwriter = false,
+    julia_project = "@.",
     cmd::String = "",
 )
     # c.f. MyNote above

@@ -11,14 +11,9 @@ makedocs(;
     format = Documenter.HTML(;
         prettyurls = get(ENV, "CI", "false") == "true",
         canonical = "https://AtelierArith.github.io/Replay.jl",
-        assets = String[]
+        assets = String[],
     ),
-    pages = [
-        "Home" => "index.md",
-    ]
+    pages = ["Home" => "index.md"],
 )
 
-deploydocs(;
-    repo = "github.com/AtelierArith/Replay.jl",
-    devbranch = "main"
-)
+deploydocs(; repo = "github.com/AtelierArith/Replay.jl", devbranch = "main")

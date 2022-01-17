@@ -13,4 +13,4 @@ st
 $CTRL_C
 """
 
-replay(repl_script, stdout, color = :yes, julia_project=@__DIR__, use_ghostwriter=true)
+replay(repl_script, stdout, color = :yes, julia_project = @__DIR__, use_ghostwriter = true)
