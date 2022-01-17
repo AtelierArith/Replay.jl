@@ -1,8 +1,10 @@
-# Replay
+# [Replay](https://github.com/AtelierArith/Replay.jl)
 
 [![CI](https://github.com/AtelierArith/Replay.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/AtelierArith/Replay.jl/actions/workflows/CI.yml) [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://AtelierArith.github.io/Replay.jl/dev)
 
-Replay your REPL instructions [something like this](https://github.com/AtelierArith/Replay.jl/issues/1#issuecomment-970441437).
+Replay your REPL instructions something like this:
+
+[![asciicast](https://asciinema.org/a/V3w9CQXAesZUgAeTIUXytkpws.svg)](https://asciinema.org/a/V3w9CQXAesZUgAeTIUXytkpws)
 
 ![](docs/src/assets/logo-dark.svg)
 
@@ -45,22 +47,39 @@ st
 $CTRL_C
 """
 
-replay(repl_script, stdout, color = :yes, julia_project=@__DIR__, use_ghostwriter=true)
+replay(repl_script, stdout, julia_project=@__DIR__, use_ghostwriter=true, cmd="--color=yes")
 $ julia --project=@. -e 'using Pkg; Pkg.instantiate()'
 $ julia --project=@. ./examples/readme/app.jl
 ```
 
-![demo](https://user-images.githubusercontent.com/16760547/142026114-15029088-4f3e-4404-beba-e544f3a5a667.gif)
+[![asciicast](https://asciinema.org/a/pi95Plhh9CWRLC7i8xeWSqLLr.svg)](https://asciinema.org/a/pi95Plhh9CWRLC7i8xeWSqLLr)
 
 
 You can redirect the output of the program into a file:
 
 ```julia
-$ julia --project=@. ./examples/readme/app.jl > output.txt
+$ julia --project=@. ./examples/helloworld/app.jl > output.txt
 $ cat output.txt
 ```
 
-Tips: you can set `replay(instructions; color=:no)` as necessary.
+Tips: you can set `replay(instructions; cmd="--color=no")` as necessary.
+
+```julia
+$ julia examples/disable_color/app.jl > output.txt
+$ cat output.txt
+```
+
+## Record instructions using [asciinema](https://asciinema.org/)
+
+- [asciinema](https://asciinema.org/) is a free and open source solution for recording terminal sessions and sharing them on the web. It can be used in combination with Replay.jl with the following commands:
+
+```console
+$ pip3 install asciinema # install `asciinema`
+$ asciinema rec output.cast --command "julia examples/helloworld/app.jl"
+$ asciinema play output.cast
+```
+
+See [This issue](https://github.com/AtelierArith/Replay.jl/issues/23) to learn more.
 
 ## Examples
 
@@ -69,6 +88,8 @@ Tips: you can set `replay(instructions; color=:no)` as necessary.
 ```console
 $ tree examples
 examples
+├── disable_color
+│   └── app.jl
 ├── helloworld
 │   └── app.jl
 ├── imageinterminal
@@ -101,8 +122,14 @@ examples
 └── use_ghostwriter
     └── app.jl
 
-11 directories, 20 files
+12 directories, 21 files
 ```
+
+# Breaking Change
+
+- The internal logic of the program has been changed to stabilize its operation. As a side effect, we had to make some destructive changes to the API.
+- Note that `color` kwarg of `replay` is removed since `v0.4.x` . Use `cmd="--color=yes"` or `cmd="--color=no"` instead.
+
 
 # Acknowledgements
 
@@ -114,7 +141,7 @@ The idea of how to replay julia session comes from
 
 - [generate_precompile.jl](https://github.com/JuliaLang/julia/blob/v1.6.3/contrib/generate_precompile.jl)
 
-@hyrodium san provided an excellent logo for our package.
+[@hyrodium](https://github.com/hyrodium) san provided an excellent logo for our package.
 - See [this PR #7](https://github.com/AtelierArith/Replay.jl/pull/7).
 
 ![](docs/src/assets/logo.svg)
