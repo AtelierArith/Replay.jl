@@ -65,12 +65,7 @@ function type_with_ghost(repl_script::AbstractString)
     clearlines(H)
 end
 
-function setup_pty(color = :yes; julia_project = "@."::AbstractString, cmd::String = "")
-    if color in [:yes, true]
-        color = "yes"
-    else
-        color = "no"
-    end
+function setup_pty(julia_project = "@."::AbstractString, cmd=String = "--color=yes")
     pts, ptm = open_fake_pty()
     blackhole = Sys.isunix() ? "/dev/null" : "nul"
     julia_exepath = joinpath(Sys.BINDIR::String, Base.julia_exename())
@@ -100,14 +95,12 @@ end
 
 function replay(
     instructions::Vector{<:AbstractString}, buf::IO = stdout;
-    color = :yes, 
     use_ghostwriter = false, 
     julia_project = "@.", 
-    cmd::String = "",
+    cmd=String = "--color=yes",
 )
-    # c.f. MyNote above
     print("\x1b[?25l") # hide cursor
-    replproc, ptm = setup_pty(color; julia_project, cmd)
+    replproc, ptm = setup_pty(julia_project, cmd)
     # Prepare a background process to copy output from process until `pts` is closed
     output_copy = Base.BufferStream()
     tee = @async try
