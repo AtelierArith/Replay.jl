@@ -45,7 +45,7 @@ st
 $CTRL_C
 """
 
-replay(repl_script, stdout, color = :yes, julia_project=@__DIR__, use_ghostwriter=true)
+replay(repl_script, stdout, julia_project=@__DIR__, use_ghostwriter=true, cmd="--color=yes")
 $ julia --project=@. -e 'using Pkg; Pkg.instantiate()'
 $ julia --project=@. ./examples/readme/app.jl
 ```
@@ -108,6 +108,12 @@ examples
 
 11 directories, 20 files
 ```
+
+# Breaking Change
+
+- The internal logic of the program has been changed to stabilize its operation. As a side effect, we had to make some destructive changes to the API.
+- Note that `color` kwarg of `replay` is removed since `v0.4.x` . Use `cmd="--color=yes"` or `cmd="--color=no"` instead.
+
 
 # Acknowledgements
 
