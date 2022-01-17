@@ -119,7 +119,7 @@ The idea of how to replay julia session comes from
 
 - [generate_precompile.jl](https://github.com/JuliaLang/julia/blob/v1.6.3/contrib/generate_precompile.jl)
 
-@hyrodium san provided an excellent logo for our package.
+[@hyrodium](https://github.com/hyrodium) san provided an excellent logo for our package.
 - See [this PR #7](https://github.com/AtelierArith/Replay.jl/pull/7).
 
 ![](docs/src/assets/logo.svg)
