@@ -56,7 +56,7 @@ $ julia --project=@. ./examples/readme/app.jl
 You can redirect the output of the program into a file:
 
 ```julia
-$ julia --project=@. ./examples/readme/app.jl > output.txt
+$ julia --project=@. ./examples/helloworld/app.jl > output.txt
 $ cat output.txt
 ```
 
