@@ -1,16 +1,12 @@
-[?2004h[0Kjulia> [7C[7C2+2[0Kjulia> [7C2+2[10C
-[?2004l4
+[?2004h[0Kjulia> [7C[7Cx = 1 + 1[0Kjulia> [7Cx = 1 + 1[16C
+[?2004l2
 
-[0K[0Kjulia> [7C[7C[?2004h[0Kjulia> [7C[7Cprint("")[0Kjulia> [7Cprint("")[16C
-[?2004l
-[0K[0Kjulia> [7C[7C[?2004h[0Kjulia> [7C[7Cdisplay([1])[0Kjulia> [7Cdisplay([1])[19C
-[?2004l1-element Vector{Int64}:
- 1
+[0K[0Kjulia> [7C[7C[?2004h[0Kjulia> [7C[7Cprintln("Hello World")[0Kjulia> [7Cprintln("Hello World")[29C
+[?2004lHello World
 
-[0K[0Kjulia> [7C[7C[?2004h[0Kjulia> [7C[7Cdisplay([1 2; 3 4])[0Kjulia> [7Cdisplay([1 2; 3 4])[26C
-[?2004l2×2 Matrix{Int64}:
- 1  2
- 3  4
+[0K[0Kjulia> [7C[7C[?2004h[0Kjulia> [7C[7C@show x[0Kjulia> [7C@show x[14C
+[?2004lx = 2
+2
 
 [0K[0Kjulia> [7C[7C[?2004h[0Kjulia> [7C[7Cexit()[0Kjulia> [7Cexit()[13C
 [?2004l

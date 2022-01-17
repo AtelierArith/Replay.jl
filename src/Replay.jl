@@ -65,32 +65,19 @@ function type_with_ghost(repl_script::AbstractString)
     clearlines(H)
 end
 
-function setup_pty(color = :yes; julia_project = "@."::AbstractString, cmd::String = "")
-    if color in [:yes, true]
-        color = "yes"
-    else
-        color = "no"
-    end
+function setup_pty(julia_project = "@."::AbstractString, cmd=String = "--color=yes")
     pts, ptm = open_fake_pty()
     blackhole = Sys.isunix() ? "/dev/null" : "nul"
     julia_exepath = joinpath(Sys.BINDIR::String, Base.julia_exename())
     replproc = withenv(
         "JULIA_HISTORY" => blackhole,
         "JULIA_PROJECT" => "$julia_project",
-        "CI" => get(ENV, "CI", "false"),
         "TERM" => ""
     ) do
-        # MyNote
-        # -e 'if ENV["CI"] != ... ' is required to pass Pkg.test(), or "IOError: stream is closed or unusable" will happen.
-        # idk why we need print("\x1b[?25l") inside of -e '...'
-        # It seems print("\x1b[?25l") inside of the replay function does not work???
-        run(
-            ```$(julia_exepath)
-                --cpu-target=native --startup-file=no --color=$(color)
-                -e 'if ENV["CI"] != "true"; using Pkg; Pkg.instantiate(); print("\x1b[?25l"); end'
-                -i
-                $(cmd)
-            ```,
+        # Install packages
+        run(`$(julia_exepath) -e 'using Pkg; Pkg.instantiate()'`)
+        # Initialize REPL
+        run(```$(julia_exepath) $(split(cmd))```,
             pts, pts, pts; wait = false
         )
     end
@@ -100,23 +87,25 @@ end
 
 function replay(
     instructions::Vector{<:AbstractString}, buf::IO = stdout;
-    color = :yes, 
     use_ghostwriter = false, 
     julia_project = "@.", 
-    cmd::String = "",
+    cmd=String = "--color=yes",
 )
-    # c.f. MyNote above
     print("\x1b[?25l") # hide cursor
-    replproc, ptm = setup_pty(color; julia_project, cmd)
+    replproc, ptm = setup_pty(julia_project, cmd)
     # Prepare a background process to copy output from process until `pts` is closed
     output_copy = Base.BufferStream()
     tee = @async try
         while !eof(ptm)
+            # using `stdout` rather than `buf` is intentionally designed
+            write(stdout, "\x1b[?25l") # hide cursor
             l = readavailable(ptm)
             write(buf, l)
             Sys.iswindows() && (sleep(0.1); yield(); yield()) # workaround hang - probably a libuv issue?
             write(output_copy, l)
         end
+        # using `stdout` rather than `buf` is intentionally designed
+        write(stdout, "\x1b[?25h") # unhide cursor
         close(output_copy)
         close(ptm)
     catch ex
