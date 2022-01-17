@@ -2,7 +2,9 @@
 
 [![CI](https://github.com/AtelierArith/Replay.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/AtelierArith/Replay.jl/actions/workflows/CI.yml) [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://AtelierArith.github.io/Replay.jl/dev)
 
-Replay your REPL instructions [something like this](https://github.com/AtelierArith/Replay.jl/issues/1#issuecomment-970441437).
+Replay your REPL instructions something like this:
+
+[![asciicast](https://asciinema.org/a/V3w9CQXAesZUgAeTIUXytkpws.svg)](https://asciinema.org/a/V3w9CQXAesZUgAeTIUXytkpws)
 
 ![](docs/src/assets/logo-dark.svg)
 
