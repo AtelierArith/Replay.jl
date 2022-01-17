@@ -55,7 +55,7 @@ function type_with_ghost_core(line::AbstractString; display_prompt=false)
 end
 
 function type_with_ghost(repl_script::AbstractString)
-    lines = split(repl_script::String, '\n'; keepempty = false)
+    lines = split(String(repl_script), '\n'; keepempty = false)
     H = length(lines)
     for (i, line) in enumerate(lines)
         display_prompt = (i == 1)
@@ -165,6 +165,6 @@ function replay(
     return buf
 end
 
-replay(repl_script::AbstractString, args...; kwargs...) = replay(split(string(repl_script), '\n'; keepempty = false), args...; kwargs...)
+replay(repl_script::AbstractString, args...; kwargs...) = replay(split(String(repl_script), '\n'; keepempty = false), args...; kwargs...)
 
 end # module
