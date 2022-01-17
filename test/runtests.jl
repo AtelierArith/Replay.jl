@@ -38,4 +38,16 @@ for color in [:no, false]
         ref = join(readlines(reftxt), "\r\n")
         @test out == ref
     end
+endexamples_dir = joinpath(pkgdir(Replay), "examples")
+examples_dir = joinpath(pkgdir(Replay), "examples")
+for example in readdir(examples_dir)
+    @testset "$example" begin
+        apppath = joinpath(examples_dir, example, "app.jl")
+        julia_exepath = joinpath(Sys.BINDIR::String, Base.julia_exename())
+        @info "running $(example)"
+        withenv("CI" => true) do
+            r = run(`$(julia_exepath) $(apppath)`)
+            @test r.exitcode == 0
+        end
+    end
 end
