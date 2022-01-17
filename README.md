@@ -60,7 +60,12 @@ $ julia --project=@. ./examples/helloworld/app.jl > output.txt
 $ cat output.txt
 ```
 
-Tips: you can set `replay(instructions; color=:no)` as necessary.
+Tips: you can set `replay(instructions; cmd="--color=no")` as necessary.
+
+```julia
+$ julia examples/disable_color/app.jl > output.txt
+$ cat output.txt
+```
 
 ## Examples
 
