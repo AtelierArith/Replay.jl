@@ -1,4 +1,4 @@
-# Replay
+# [Replay](https://github.com/AtelierArith/Replay.jl)
 
 [![CI](https://github.com/AtelierArith/Replay.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/AtelierArith/Replay.jl/actions/workflows/CI.yml) [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://AtelierArith.github.io/Replay.jl/dev)
 
@@ -66,6 +66,18 @@ Tips: you can set `replay(instructions; cmd="--color=no")` as necessary.
 $ julia examples/disable_color/app.jl > output.txt
 $ cat output.txt
 ```
+
+## Record instructions using [asciinema](https://asciinema.org/)
+
+- [asciinema](https://asciinema.org/) is a free and open source solution for recording terminal sessions and sharing them on the web. It can be used in combination with Replay.jl with the following commands:
+
+```console
+$ pip3 install asciinema # install `asciinema`
+$ asciinema rec output.cast --command "julia examples/helloworld/app.jl"
+$ asciinema play output.cast
+```
+
+See [This issue](https://github.com/AtelierArith/Replay.jl/issues/23) to learn more.
 
 ## Examples
 
