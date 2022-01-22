@@ -28,21 +28,24 @@ function clearlines(H::Integer)
     end
 end
 
-function type_with_ghost_core(line::AbstractString; display_prompt=false)
-    juliaprompt = "julia> "
-    spacestring = " "
-    dummy = repeat(spacestring, length(juliaprompt))
+function type_with_ghost_core(line::AbstractString, mode; display_prompt = false)
     if !display_prompt
+        # we assume we're in julian mode
+        spacestring = " "
+        dummy = repeat(spacestring, length("julia> "))
         line = dummy * line
     end
     clearline()
     for index in collect(eachindex(line))
         if display_prompt
-            print(crayon"green bold", juliaprompt)
-            print(crayon"reset")
+            if Base.get_have_color()
+                print(mode.prompt_prefix, mode.prompt, mode.prompt_suffix)
+            else
+                print(mode.prompt)
+            end
         end
         println(join(line[begin:index]))
-        clearline(move_up=true)
+        clearline(move_up = true)
         duration = if 30 < length(line)
             0.0125
         elseif 15 < length(line) < 30
@@ -54,18 +57,18 @@ function type_with_ghost_core(line::AbstractString; display_prompt=false)
     end
 end
 
-function type_with_ghost(repl_script::AbstractString)
+function type_with_ghost(repl_script::AbstractString, mode)
     lines = split(String(repl_script), '\n'; keepempty = false)
     H = length(lines)
     for (i, line) in enumerate(lines)
         display_prompt = (i == 1)
-        type_with_ghost_core(line; display_prompt)
+        type_with_ghost_core(line, mode; display_prompt)
         println()
     end
     clearlines(H)
 end
 
-function setup_pty(julia_project = "@."::AbstractString, cmd=String = "--color=yes")
+function setup_pty(julia_project = "@."::AbstractString, cmd = String = "--color=yes")
     pts, ptm = open_fake_pty()
     blackhole = Sys.isunix() ? "/dev/null" : "nul"
     julia_exepath = joinpath(Sys.BINDIR::String, Base.julia_exename())
@@ -87,9 +90,9 @@ end
 
 function replay(
     instructions::Vector{<:AbstractString}, buf::IO = stdout;
-    use_ghostwriter = false, 
-    julia_project = "@.", 
-    cmd=String = "--color=yes",
+    use_ghostwriter = false,
+    julia_project = "@.",
+    cmd = String = "--color=yes"
 )
     print("\x1b[?25l") # hide cursor
     replproc, ptm = setup_pty(julia_project, cmd)
@@ -120,12 +123,76 @@ function replay(
     sleep(0.1)
     readavailable(output_copy)
 
+    name = :julian
+    prompt = "julia> "
+    prompt_prefix = Base.text_colors[:bold] * Base.text_colors[:green]
+    prompt_suffix = Base.color_normal
+    mode = (; name, prompt, prompt_prefix, prompt_suffix)
+    current_mode_name = :julian
+
     # let's replay!
     for cell in instructions
         sleep(1)
+
+        ghost_script = cell
+        if current_mode_name == :julian
+            mode = if startswith(cell, ';')
+                ghost_script = cell[begin+1:end] # remove ';'
+                # shell mode
+                name = :shell
+                prompt = "shell> "
+                prompt_prefix = Base.text_colors[:bold] * Base.text_color[:red]
+                prompt_suffix = Base.color_normal
+                current_mode_name = name
+                (; name, prompt, prompt_prefix, prompt_suffix)
+            elseif startswith(cell, ']')
+                ghost_script = cell[begin+1:end] # remove ']'
+                # pkg repl
+                name = :repl
+                prompt_prefix = Base.text_colors[:bold] * Base.text_colors[:blue]
+                active_project_dir, _ = splitext(Base.active_project() |> dirname |> basename)
+                if occursin(r"v[0-9].[0-9]", active_project_dir)
+                    prompt = "(@v$(VERSION.major).$(VERSION.minor)) pkg> "
+                else
+                    prompt = "($(active_project_dir)) pkg> "
+                end
+                prompt_suffix = Base.color_normal
+                current_mode_name = name
+                (; name, prompt, prompt_prefix, prompt_suffix)
+            elseif startswith(cell, '?')
+                ghost_script = cell[begin+1:end] # remove '?'
+                # help mode
+                name = :help
+                prompt = "help?> "
+                prompt_prefix = Base.text_colors[:bold] * Base.text_colors[:yellow]
+                prompt_suffix = Base.color_normal
+                # help mode should back to julian mode
+                current_mode_name = :julian
+                (; name, prompt, prompt_prefix, prompt_suffix)
+            else
+                # julian mode
+                name = :julian
+                prompt = "julia> "
+                prompt_prefix = Base.text_colors[:bold] * Base.text_colors[:green]
+                prompt_suffix = Base.color_normal
+                current_mode_name = :julian
+                (; name, prompt, prompt_prefix, prompt_suffix)
+            end
+        else
+            if endswith(cell, CTRL_C)
+                # julian mode
+                name = :julian
+                prompt = "julia> "
+                prompt_prefix = Base.text_colors[:bold] * Base.text_colors[:green]
+                prompt_suffix = Base.color_normal
+                current_mode_name = :julian
+                mode = (; name, prompt, prompt_prefix, prompt_suffix)
+            end
+        end
+
         bytesavailable(output_copy) > 0 && readavailable(output_copy)
 
-        use_ghostwriter && type_with_ghost(cell)
+        use_ghostwriter && type_with_ghost(ghost_script, mode)
 
         if endswith(cell, CTRL_C)
             write(ptm, cell)
@@ -144,7 +211,7 @@ function replay(
     end
 
     sleep(1)
-    use_ghostwriter && type_with_ghost("exit()")
+    use_ghostwriter && type_with_ghost("exit()", mode)
     write(ptm, "exit()\n")
     sleep(1)
     wait(tee)

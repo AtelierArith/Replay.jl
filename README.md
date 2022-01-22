@@ -41,7 +41,7 @@ display([1])
 display([1 2; 3 4])
 @time 1+1
 using Pkg; Pkg.activate(".")
-] add Example
+]add Example
 rm Example
 st
 $CTRL_C
@@ -52,7 +52,7 @@ $ julia --project=@. -e 'using Pkg; Pkg.instantiate()'
 $ julia --project=@. ./examples/readme/app.jl
 ```
 
-[![asciicast](https://asciinema.org/a/pi95Plhh9CWRLC7i8xeWSqLLr.svg)](https://asciinema.org/a/pi95Plhh9CWRLC7i8xeWSqLLr)
+[![asciicast](https://asciinema.org/a/WeyJwfjliWRSzliWMnbBQNtJP.svg)](https://asciinema.org/a/WeyJwfjliWRSzliWMnbBQNtJP)
 
 
 You can redirect the output of the program into a file:
