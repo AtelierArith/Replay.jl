@@ -36,9 +36,11 @@ end
 end
 
 #=
+using Replay, Test
 endexamples_dir = joinpath(pkgdir(Replay), "examples")
 examples_dir = joinpath(pkgdir(Replay), "examples")
 for example in readdir(examples_dir)
+    example == "disable_color" && continue
     @testset "$example" begin
         apppath = joinpath(examples_dir, example, "app.jl")
         julia_exepath = joinpath(Sys.BINDIR::String, Base.julia_exename())
