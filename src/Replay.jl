@@ -38,8 +38,7 @@ function type_with_ghost_core(line::AbstractString; display_prompt=false)
     clearline()
     for index in collect(eachindex(line))
         if display_prompt
-            print(crayon"green bold", juliaprompt)
-            print(crayon"reset")
+            print(mode.prompt_prefix, mode.prompt, mode.prompt_suffix)
         end
         println(join(line[begin:index]))
         clearline(move_up=true)
