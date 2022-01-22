@@ -30,7 +30,8 @@ Don't worry! Our package `Replay.jl` saves your life!
 # Usage
 
 ```console
-$ cd path/to/this/repository
+$ git clone https://github.com/AtelierArith/Replay.jl.git
+$ cd Replay.jl
 $ cat ./examples/readme/app.jl
 using Replay
 
