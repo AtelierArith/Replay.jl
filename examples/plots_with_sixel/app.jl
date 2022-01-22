@@ -8,4 +8,4 @@ show(buf, MIME("image/png"), plot(sin, size=(1000, 750)))
 buf |> load |> sixel_encode
 """
 
-replay(instructions, julia_project=@__DIR__)
+replay(instructions, julia_project = @__DIR__)
