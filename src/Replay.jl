@@ -28,7 +28,7 @@ function clearlines(H::Integer)
     end
 end
 
-function type_with_ghost_core(line::AbstractString; display_prompt=false)
+function type_with_ghost_core(line::AbstractString, mode; display_prompt = false)
     if !display_prompt
         # we assume we're in julian mode
         spacestring = " "
@@ -53,12 +53,12 @@ function type_with_ghost_core(line::AbstractString; display_prompt=false)
     end
 end
 
-function type_with_ghost(repl_script::AbstractString)
+function type_with_ghost(repl_script::AbstractString, mode)
     lines = split(String(repl_script), '\n'; keepempty = false)
     H = length(lines)
     for (i, line) in enumerate(lines)
         display_prompt = (i == 1)
-        type_with_ghost_core(line; display_prompt)
+        type_with_ghost_core(line, mode; display_prompt)
         println()
     end
     clearlines(H)
