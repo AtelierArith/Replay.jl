@@ -72,7 +72,7 @@ end
 function setup_pty(julia_project = "@."::AbstractString, cmd = String = "--color=yes")
     pts, ptm = open_fake_pty()
     blackhole = Sys.isunix() ? "/dev/null" : "nul"
-    julia_exepath = joinpath(Sys.BINDIR::String, Base.julia_exename())
+    julia_exepath = joinpath(Sys.BINDIR, Base.julia_exename())
     replproc = withenv(
         "JULIA_HISTORY" => blackhole,
         "JULIA_PROJECT" => "$julia_project",
