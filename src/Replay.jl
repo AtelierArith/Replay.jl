@@ -29,10 +29,10 @@ function clearlines(H::Integer)
 end
 
 function type_with_ghost_core(line::AbstractString; display_prompt=false)
-    juliaprompt = "julia> "
-    spacestring = " "
-    dummy = repeat(spacestring, length(juliaprompt))
     if !display_prompt
+        # we assume we're in julian mode
+        spacestring = " "
+        dummy = repeat(spacestring, length("julia> "))
         line = dummy * line
     end
     clearline()
