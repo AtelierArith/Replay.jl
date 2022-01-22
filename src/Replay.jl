@@ -17,13 +17,14 @@ export replay
 function clearline(; move_up::Bool = false)
     buf = IOBuffer()
     print(buf, "\x1b[2K") # clear line
+    print(buf, "\x1b[?25l") # hide cursor
     print(buf, "\x1b[999D") # rollback the cursor
     move_up && print(buf, "\x1b[1A") # move up
     print(buf |> take! |> String)
 end
 
 function clearlines(H::Integer)
-    for i = 1:H
+    for _ = 1:H
         clearline(move_up = true)
     end
 end
@@ -71,7 +72,7 @@ end
 function setup_pty(julia_project = "@."::AbstractString, cmd = String = "--color=yes")
     pts, ptm = open_fake_pty()
     blackhole = Sys.isunix() ? "/dev/null" : "nul"
-    julia_exepath = joinpath(Sys.BINDIR::String, Base.julia_exename())
+    julia_exepath = joinpath(Sys.BINDIR, Base.julia_exename())
     replproc = withenv(
         "JULIA_HISTORY" => blackhole,
         "JULIA_PROJECT" => "$julia_project",
@@ -80,7 +81,7 @@ function setup_pty(julia_project = "@."::AbstractString, cmd = String = "--color
         # Install packages
         run(`$(julia_exepath) -e 'using Pkg; Pkg.instantiate()'`)
         # Initialize REPL
-        run(```$(julia_exepath) $(split(cmd))```, pts, pts, pts; wait = false)
+        run(```$(julia_exepath) -i -e 'print("\x1b[?25l")' $(split(cmd))```, pts, pts, pts; wait = false)
     end
     Base.close_stdio(pts)
     return replproc, ptm
@@ -91,7 +92,7 @@ function replay(
     buf::IO = stdout;
     use_ghostwriter = false,
     julia_project = "@.",
-    cmd = String = "--color=yes",
+    cmd = String = "--color=yes"
 )
     print("\x1b[?25l") # hide cursor
     replproc, ptm = setup_pty(julia_project, cmd)
@@ -99,15 +100,11 @@ function replay(
     output_copy = Base.BufferStream()
     tee = @async try
         while !eof(ptm)
-            # using `stdout` rather than `buf` is intentionally designed
-            write(stdout, "\x1b[?25l") # hide cursor
             l = readavailable(ptm)
             write(buf, l)
             Sys.iswindows() && (sleep(0.1); yield(); yield()) # workaround hang - probably a libuv issue?
             write(output_copy, l)
         end
-        # using `stdout` rather than `buf` is intentionally designed
-        write(stdout, "\x1b[?25h") # unhide cursor
         close(output_copy)
         close(ptm)
     catch ex
