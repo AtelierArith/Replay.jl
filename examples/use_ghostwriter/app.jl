@@ -18,4 +18,4 @@ instructions = """
 "(Did we mention it should be as fast as C?))";
 """
 
-replay(instructions, use_ghostwriter=true)
+replay(instructions, use_ghostwriter = true)
