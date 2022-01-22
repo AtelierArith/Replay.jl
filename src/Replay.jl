@@ -38,7 +38,11 @@ function type_with_ghost_core(line::AbstractString, mode; display_prompt = false
     clearline()
     for index in collect(eachindex(line))
         if display_prompt
-            print(mode.prompt_prefix, mode.prompt, mode.prompt_suffix)
+            if Base.get_have_color()
+                print(mode.prompt_prefix, mode.prompt, mode.prompt_suffix)
+            else
+                print(mode.prompt)
+            end
         end
         println(join(line[begin:index]))
         clearline(move_up = true)
