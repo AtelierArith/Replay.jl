@@ -24,7 +24,7 @@ function clearline(; move_up::Bool = false)
 end
 
 function clearlines(H::Integer)
-    for i = 1:H
+    for _ = 1:H
         clearline(move_up = true)
     end
 end
@@ -92,7 +92,7 @@ function replay(
     buf::IO = stdout;
     use_ghostwriter = false,
     julia_project = "@.",
-    cmd = String = "--color=yes",
+    cmd = String = "--color=yes"
 )
     print("\x1b[?25l") # hide cursor
     replproc, ptm = setup_pty(julia_project, cmd)
