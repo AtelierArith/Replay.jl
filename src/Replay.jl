@@ -99,15 +99,11 @@ function replay(
     output_copy = Base.BufferStream()
     tee = @async try
         while !eof(ptm)
-            # using `stdout` rather than `buf` is intentionally designed
-            write(stdout, "\x1b[?25l") # hide cursor
             l = readavailable(ptm)
             write(buf, l)
             Sys.iswindows() && (sleep(0.1); yield(); yield()) # workaround hang - probably a libuv issue?
             write(output_copy, l)
         end
-        # using `stdout` rather than `buf` is intentionally designed
-        write(stdout, "\x1b[?25h") # unhide cursor
         close(output_copy)
         close(ptm)
     catch ex
