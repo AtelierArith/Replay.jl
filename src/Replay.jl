@@ -17,6 +17,7 @@ export replay
 function clearline(; move_up::Bool = false)
     buf = IOBuffer()
     print(buf, "\x1b[2K") # clear line
+    print(buf, "\x1b[?25l") # hide cursor
     print(buf, "\x1b[999D") # rollback the cursor
     move_up && print(buf, "\x1b[1A") # move up
     print(buf |> take! |> String)
@@ -80,7 +81,7 @@ function setup_pty(julia_project = "@."::AbstractString, cmd = String = "--color
         # Install packages
         run(`$(julia_exepath) -e 'using Pkg; Pkg.instantiate()'`)
         # Initialize REPL
-        run(```$(julia_exepath) $(split(cmd))```, pts, pts, pts; wait = false)
+        run(```$(julia_exepath) -i -e 'print("\x1b[?25l")' $(split(cmd))```, pts, pts, pts; wait = false)
     end
     Base.close_stdio(pts)
     return replproc, ptm
