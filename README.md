@@ -41,7 +41,7 @@ display([1])
 display([1 2; 3 4])
 @time 1+1
 using Pkg; Pkg.activate(".")
-] add Example
+]add Example
 rm Example
 st
 $CTRL_C
