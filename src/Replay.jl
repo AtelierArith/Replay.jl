@@ -121,8 +121,8 @@ function replay(
 
     name = :julian
     prompt = "julia> "
-    prompt_prefix = Base.text_colors[:bold] * "\e[32m"
-    prompt_suffix = "\e[0m"
+    prompt_prefix = Base.text_colors[:bold] * Base.text_colors[:green]
+    prompt_suffix = Base.color_normal
     mode = (; name, prompt, prompt_prefix, prompt_suffix)
     current_mode_name = :julian
 
@@ -137,22 +137,22 @@ function replay(
                 # shell mode
                 name = :shell
                 prompt = "shell> "
-                prompt_prefix = Base.text_colors[:bold] * "\e[31m"
-                prompt_suffix = "\e[0m"
+                prompt_prefix = Base.text_colors[:bold] * Base.text_color[:red]
+                prompt_suffix = Base.color_normal
                 current_mode_name = name
                 (; name, prompt, prompt_prefix, prompt_suffix)
             elseif startswith(cell, ']')
                 ghost_script = cell[begin+1:end] # remove ']'
                 # pkg repl
                 name = :repl
-                prompt_prefix = Base.text_colors[:bold] * "\e[34m"
+                prompt_prefix = Base.text_colors[:bold] * Base.text_colors[:blue]
                 active_project_dir, _ = splitext(Base.active_project() |> dirname |> basename)
                 if occursin(r"v[0-9].[0-9]", active_project_dir)
                     prompt = "(@v$(VERSION.major).$(VERSION.minor)) pkg> "
                 else
                     prompt = "($(active_project_dir)) pkg> "
                 end
-                prompt_suffix = "\e[0m"
+                prompt_suffix = Base.color_normal
                 current_mode_name = name
                 (; name, prompt, prompt_prefix, prompt_suffix)
             elseif startswith(cell, '?')
@@ -160,8 +160,8 @@ function replay(
                 # help mode
                 name = :help
                 prompt = "help?> "
-                prompt_prefix = Base.text_colors[:bold] * "\e[33m"
-                prompt_suffix = "\e[0m"
+                prompt_prefix = Base.text_colors[:bold] * Base.text_colors[:yellow]
+                prompt_suffix = Base.color_normal
                 # help mode should back to julian mode
                 current_mode_name = :julian
                 (; name, prompt, prompt_prefix, prompt_suffix)
@@ -169,8 +169,8 @@ function replay(
                 # julian mode
                 name = :julian
                 prompt = "julia> "
-                prompt_prefix = Base.text_colors[:bold] * "\e[32m"
-                prompt_suffix = "\e[0m"
+                prompt_prefix = Base.text_colors[:bold] * Base.text_colors[:green]
+                prompt_suffix = Base.color_normal
                 current_mode_name = :julian
                 (; name, prompt, prompt_prefix, prompt_suffix)
             end
@@ -179,8 +179,8 @@ function replay(
                 # julian mode
                 name = :julian
                 prompt = "julia> "
-                prompt_prefix = Base.text_colors[:bold] * "\e[32m"
-                prompt_suffix = "\e[0m"
+                prompt_prefix = Base.text_colors[:bold] * Base.text_colors[:green]
+                prompt_suffix = Base.color_normal
                 current_mode_name = :julian
                 mode = (; name, prompt, prompt_prefix, prompt_suffix)
             end
