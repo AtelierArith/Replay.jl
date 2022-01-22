@@ -30,7 +30,8 @@ Don't worry! Our package `Replay.jl` saves your life!
 # Usage
 
 ```console
-$ cd path/to/this/repository
+$ git clone https://github.com/AtelierArith/Replay.jl.git
+$ cd Replay.jl
 $ cat ./examples/readme/app.jl
 using Replay
 
@@ -50,6 +51,9 @@ $CTRL_C
 replay(repl_script, stdout, julia_project=@__DIR__, use_ghostwriter=true, cmd="--color=yes")
 $ julia --project=@. -e 'using Pkg; Pkg.instantiate()'
 $ julia --project=@. ./examples/readme/app.jl
+$ # Below is optional
+$ asciinema rec result.cast --command "julia --project=@. ./examples/readme/app.jl"
+$ asciinema play result.cast
 ```
 
 [![asciicast](https://asciinema.org/a/WeyJwfjliWRSzliWMnbBQNtJP.svg)](https://asciinema.org/a/WeyJwfjliWRSzliWMnbBQNtJP)
