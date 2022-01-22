@@ -120,12 +120,76 @@ function replay(
     sleep(0.1)
     readavailable(output_copy)
 
+    name = :julian
+    prompt = "julia> "
+    prompt_prefix = Base.text_colors[:bold] * "\e[32m"
+    prompt_suffix = "\e[0m"
+    mode = (; name, prompt, prompt_prefix, prompt_suffix)
+    current_mode_name = :julian
+
     # let's replay!
     for cell in instructions
         sleep(1)
+
+        ghost_script = cell
+        if current_mode_name == :julian
+            mode = if startswith(cell, ';')
+                ghost_script = cell[begin+1:end] # remove ';'
+                # shell mode
+                name = :shell
+                prompt = "shell> "
+                prompt_prefix = Base.text_colors[:bold] * "\e[31m"
+                prompt_suffix = "\e[0m"
+                current_mode_name = name
+                (; name, prompt, prompt_prefix, prompt_suffix)
+            elseif startswith(cell, ']')
+                ghost_script = cell[begin+1:end] # remove ']'
+                # pkg repl
+                name = :repl
+                prompt_prefix = Base.text_colors[:bold] * "\e[34m"
+                active_project_dir, _ = splitext(Base.active_project() |> dirname |> basename)
+                if occursin(r"v[0-9].[0-9]", active_project_dir)
+                    prompt = "(@v$(VERSION.major).$(VERSION.minor)) pkg> "
+                else
+                    prompt = "($(active_project_dir)) pkg> "
+                end
+                prompt_suffix = "\e[0m"
+                current_mode_name = name
+                (; name, prompt, prompt_prefix, prompt_suffix)
+            elseif startswith(cell, '?')
+                ghost_script = cell[begin+1:end] # remove '?'
+                # help mode
+                name = :help
+                prompt = "help?> "
+                prompt_prefix = Base.text_colors[:bold] * "\e[33m"
+                prompt_suffix = "\e[0m"
+                # help mode should back to julian mode
+                current_mode_name = :julian
+                (; name, prompt, prompt_prefix, prompt_suffix)
+            else
+                # julian mode
+                name = :julian
+                prompt = "julia> "
+                prompt_prefix = Base.text_colors[:bold] * "\e[32m"
+                prompt_suffix = "\e[0m"
+                current_mode_name = :julian
+                (; name, prompt, prompt_prefix, prompt_suffix)
+            end
+        else
+            if endswith(cell, CTRL_C)
+                # julian mode
+                name = :julian
+                prompt = "julia> "
+                prompt_prefix = Base.text_colors[:bold] * "\e[32m"
+                prompt_suffix = "\e[0m"
+                current_mode_name = :julian
+                mode = (; name, prompt, prompt_prefix, prompt_suffix)
+            end
+        end
+
         bytesavailable(output_copy) > 0 && readavailable(output_copy)
 
-        use_ghostwriter && type_with_ghost(cell)
+        use_ghostwriter && type_with_ghost(ghost_script, mode)
 
         if endswith(cell, CTRL_C)
             write(ptm, cell)
@@ -144,7 +208,7 @@ function replay(
     end
 
     sleep(1)
-    use_ghostwriter && type_with_ghost("exit()")
+    use_ghostwriter && type_with_ghost("exit()", mode)
     write(ptm, "exit()\n")
     sleep(1)
     wait(tee)
