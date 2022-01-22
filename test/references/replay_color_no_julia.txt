@@ -1,4 +1,4 @@
-[?2004h[0Kjulia> [7C[7Cx = 1 + 1[0Kjulia> [7Cx = 1 + 1[16C
+[?25l[?2004h[0Kjulia> [7C[7Cx = 1 + 1[0Kjulia> [7Cx = 1 + 1[16C
 [?2004l2
 
 [0K[0Kjulia> [7C[7C[?2004h[0Kjulia> [7C[7Cprintln("Hello World")[0Kjulia> [7Cprintln("Hello World")[29C

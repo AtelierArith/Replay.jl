@@ -8,8 +8,8 @@ println("Hello World")
 """
 
 @testset "replay: color=yes" begin
-    color="yes"
-    buf = replay(repl_script, IOBuffer(); cmd="-q --color=yes")
+    color = "yes"
+    buf = replay(repl_script, IOBuffer(); cmd = "-q --color=yes")
     out = buf |> take! |> String
     #=
     open(joinpath(@__DIR__, "references", "replay_color_$(color)_julia.txt"), "w") do f
@@ -23,7 +23,7 @@ end
 
 @testset "replay: color=no" begin
     color = "no"
-    buf = replay(repl_script, IOBuffer(); cmd="-q --color=no")
+    buf = replay(repl_script, IOBuffer(); cmd = "-q --color=no")
     out = buf |> take! |> String
     #=
     open(joinpath(@__DIR__, "references", "replay_color_$(color)_julia.txt"), "w") do f
