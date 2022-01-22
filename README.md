@@ -52,7 +52,7 @@ $ julia --project=@. -e 'using Pkg; Pkg.instantiate()'
 $ julia --project=@. ./examples/readme/app.jl
 ```
 
-[![asciicast](https://asciinema.org/a/pi95Plhh9CWRLC7i8xeWSqLLr.svg)](https://asciinema.org/a/pi95Plhh9CWRLC7i8xeWSqLLr)
+[![asciicast](https://asciinema.org/a/WeyJwfjliWRSzliWMnbBQNtJP.svg)](https://asciinema.org/a/WeyJwfjliWRSzliWMnbBQNtJP)
 
 
 You can redirect the output of the program into a file:
