@@ -75,24 +75,23 @@ function setup_pty(julia_project = "@."::AbstractString, cmd = String = "--color
     replproc = withenv(
         "JULIA_HISTORY" => blackhole,
         "JULIA_PROJECT" => "$julia_project",
-        "TERM" => ""
+        "TERM" => "",
     ) do
         # Install packages
         run(`$(julia_exepath) -e 'using Pkg; Pkg.instantiate()'`)
         # Initialize REPL
-        run(```$(julia_exepath) $(split(cmd))```,
-            pts, pts, pts; wait = false
-        )
+        run(```$(julia_exepath) $(split(cmd))```, pts, pts, pts; wait = false)
     end
     Base.close_stdio(pts)
     return replproc, ptm
 end
 
 function replay(
-    instructions::Vector{<:AbstractString}, buf::IO = stdout;
+    instructions::Vector{<:AbstractString},
+    buf::IO = stdout;
     use_ghostwriter = false,
     julia_project = "@.",
-    cmd = String = "--color=yes"
+    cmd = String = "--color=yes",
 )
     print("\x1b[?25l") # hide cursor
     replproc, ptm = setup_pty(julia_project, cmd)
@@ -150,7 +149,8 @@ function replay(
                 # pkg repl
                 name = :repl
                 prompt_prefix = Base.text_colors[:bold] * Base.text_colors[:blue]
-                active_project_dir, _ = splitext(Base.active_project() |> dirname |> basename)
+                active_project_dir, _ =
+                    splitext(Base.active_project() |> dirname |> basename)
                 if occursin(r"v[0-9].[0-9]", active_project_dir)
                     prompt = "(@v$(VERSION.major).$(VERSION.minor)) pkg> "
                 else
@@ -221,6 +221,7 @@ function replay(
     return buf
 end
 
-replay(repl_script::AbstractString, args...; kwargs...) = replay(split(String(repl_script), '\n'; keepempty = false), args...; kwargs...)
+replay(repl_script::AbstractString, args...; kwargs...) =
+    replay(split(String(repl_script), '\n'; keepempty = false), args...; kwargs...)
 
 end # module

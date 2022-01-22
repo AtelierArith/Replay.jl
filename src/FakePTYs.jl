@@ -12,7 +12,7 @@ end
 function open_fake_pty()
     @static if Sys.iswindows()
         # Fake being cygwin
-        pid = string(getpid(), base=16, pad=16)
+        pid = string(getpid(), base = 16, pad = 16)
         pipename = """\\\\?\\pipe\\cygwin-$pid-pty10-abcdefg"""
         server = listen(pipename)
         pts = connect(pipename)
@@ -39,10 +39,15 @@ function open_fake_pty()
         rc = ccall(:unlockpt, Cint, (Cint,), fdm)
         rc != 0 && error("unlockpt")
 
-        fds = ccall(:open, Cint, (Ptr{UInt8}, Cint),
-            ccall(:ptsname, Ptr{UInt8}, (Cint,), fdm), O_RDWR | O_NOCTTY)
+        fds = ccall(
+            :open,
+            Cint,
+            (Ptr{UInt8}, Cint),
+            ccall(:ptsname, Ptr{UInt8}, (Cint,), fdm),
+            O_RDWR | O_NOCTTY,
+        )
 
-            pts = RawFD(fds)
+        pts = RawFD(fds)
         # pts = fdio(fds, true)
         # pts = Base.Filesystem.File(RawFD(fds))
         # pts = Base.TTY(RawFD(fds); readable = false)
