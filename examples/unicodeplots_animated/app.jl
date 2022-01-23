@@ -38,4 +38,4 @@ instructions = [
     "animate(frames)",
 ]
 
-replay(instructions; julia_project = @__DIR__, use_ghostwriter = false)
+replay(instructions; julia_project=@__DIR__, use_ghostwriter=false)

@@ -9,6 +9,6 @@ N = 10
 @show N
 """
 
-replay(instructions, use_ghostwriter = false, julia_project = @__DIR__)
+replay(instructions, use_ghostwriter=false, julia_project=@__DIR__)
 
-replay(instructions, use_ghostwriter = true, julia_project = @__DIR__)
+replay(instructions, use_ghostwriter=true, julia_project=@__DIR__)

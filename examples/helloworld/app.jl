@@ -10,4 +10,4 @@ instructions = [
     """greet("Hello, World!")""",
 ]
 
-replay(instructions, use_ghostwriter = true)
+replay(instructions, use_ghostwriter=true)
