@@ -12,5 +12,5 @@ instructions = [
     """greet("Hello, World!")""",
 ]
 
-replay(instructions, use_ghostwriter = false, cmd = "--color=no")
-replay(instructions, use_ghostwriter = true, cmd = "--color=no")
+replay(instructions, use_ghostwriter=false, cmd="--color=no")
+replay(instructions, use_ghostwriter=true, cmd="--color=no")

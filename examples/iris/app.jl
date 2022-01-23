@@ -37,4 +37,4 @@ reduced_data = DataFrame(X * e.vectors[:, 1:topk], [:X, :Y]);
 @df reduced_data scatter(:X, :Y, group=iris.Species)
 """
 
-replay(instructions, use_ghostwriter = true, julia_project = @__DIR__)
+replay(instructions, use_ghostwriter=true, julia_project=@__DIR__)

@@ -14,7 +14,7 @@ const LEFT_ARROW = "\e[D"
 export CTRL_C, UP_ARROW, DOWN_ARROW, RIGHT_ARROW, LEFT_ARROW
 export replay
 
-function clearline(; move_up::Bool = false)
+function clearline(; move_up::Bool=false)
     buf = IOBuffer()
     print(buf, "\x1b[2K") # clear line
     print(buf, "\x1b[?25l") # hide cursor
@@ -25,11 +25,11 @@ end
 
 function clearlines(H::Integer)
     for _ = 1:H
-        clearline(move_up = true)
+        clearline(move_up=true)
     end
 end
 
-function type_with_ghost_core(line::AbstractString, mode; display_prompt = false)
+function type_with_ghost_core(line::AbstractString, mode; display_prompt=false)
     if !display_prompt
         # we assume we're in julian mode
         spacestring = " "
@@ -46,7 +46,7 @@ function type_with_ghost_core(line::AbstractString, mode; display_prompt = false
             end
         end
         println(join(line[begin:index]))
-        clearline(move_up = true)
+        clearline(move_up=true)
         duration = if 30 < length(line)
             0.0125
         elseif 15 < length(line) < 30
@@ -59,7 +59,7 @@ function type_with_ghost_core(line::AbstractString, mode; display_prompt = false
 end
 
 function type_with_ghost(repl_script::AbstractString, mode)
-    lines = split(String(repl_script), '\n'; keepempty = false)
+    lines = split(String(repl_script), '\n'; keepempty=false)
     H = length(lines)
     for (i, line) in enumerate(lines)
         display_prompt = (i == 1)
@@ -69,7 +69,7 @@ function type_with_ghost(repl_script::AbstractString, mode)
     clearlines(H)
 end
 
-function setup_pty(julia_project = "@."::AbstractString, cmd = String = "--color=yes")
+function setup_pty(julia_project="@."::AbstractString, cmd=String = "--color=yes")
     pts, ptm = open_fake_pty()
     blackhole = Sys.isunix() ? "/dev/null" : "nul"
     julia_exepath = joinpath(Sys.BINDIR, Base.julia_exename())
@@ -81,7 +81,13 @@ function setup_pty(julia_project = "@."::AbstractString, cmd = String = "--color
         # Install packages
         run(`$(julia_exepath) -e 'using Pkg; Pkg.instantiate()'`)
         # Initialize REPL
-        run(```$(julia_exepath) -i -e 'print("\x1b[?25l")' $(split(cmd))```, pts, pts, pts; wait = false)
+        run(
+            ```$(julia_exepath) -i -e 'print("\x1b[?25l")' $(split(cmd))```,
+            pts,
+            pts,
+            pts;
+            wait=false,
+        )
     end
     Base.close_stdio(pts)
     return replproc, ptm
@@ -89,10 +95,10 @@ end
 
 function replay(
     instructions::Vector{<:AbstractString},
-    buf::IO = stdout;
-    use_ghostwriter = false,
-    julia_project = "@.",
-    cmd = String = "--color=yes"
+    buf::IO=stdout;
+    use_ghostwriter=false,
+    julia_project="@.",
+    cmd=String = "--color=yes",
 )
     print("\x1b[?25l") # hide cursor
     replproc, ptm = setup_pty(julia_project, cmd)
@@ -194,7 +200,7 @@ function replay(
         if endswith(cell, CTRL_C)
             write(ptm, cell)
         else
-            if length(split(string(cell), '\n'; keepempty = false)) == 1
+            if length(split(string(cell), '\n'; keepempty=false)) == 1
                 write(ptm, cell, "\n")
             else
                 write(ptm, cell)
@@ -219,6 +225,6 @@ function replay(
 end
 
 replay(repl_script::AbstractString, args...; kwargs...) =
-    replay(split(String(repl_script), '\n'; keepempty = false), args...; kwargs...)
+    replay(split(String(repl_script), '\n'; keepempty=false), args...; kwargs...)
 
 end # module

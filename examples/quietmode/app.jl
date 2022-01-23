@@ -4,4 +4,4 @@ instructions = """
 println("julia -q")
 """
 
-replay(instructions, cmd = "-q")
+replay(instructions, cmd="-q")

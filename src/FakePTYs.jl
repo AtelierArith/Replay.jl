@@ -12,7 +12,7 @@ end
 function open_fake_pty()
     @static if Sys.iswindows()
         # Fake being cygwin
-        pid = string(getpid(), base = 16, pad = 16)
+        pid = string(getpid(), base=16, pad=16)
         pipename = """\\\\?\\pipe\\cygwin-$pid-pty10-abcdefg"""
         server = listen(pipename)
         pts = connect(pipename)
