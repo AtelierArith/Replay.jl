@@ -8,7 +8,6 @@ if Sys.iswindows()
     popfirst!(LOAD_PATH)
 end
 
-
 function open_fake_pty()
     @static if Sys.iswindows()
         # Fake being cygwin

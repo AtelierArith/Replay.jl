@@ -24,7 +24,7 @@ function clearline(; move_up::Bool=false)
 end
 
 function clearlines(H::Integer)
-    for _ = 1:H
+    for _ in 1:H
         clearline(move_up=true)
     end
 end
@@ -224,7 +224,8 @@ function replay(
     return buf
 end
 
-replay(repl_script::AbstractString, args...; kwargs...) =
+function replay(repl_script::AbstractString, args...; kwargs...)
     replay(split(String(repl_script), '\n'; keepempty=false), args...; kwargs...)
+end
 
 end # module
