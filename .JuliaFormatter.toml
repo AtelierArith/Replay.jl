@@ -1,2 +1,7 @@
+remove_extra_newlines=true
+join_lines_based_on_source=true
 whitespace_in_kwargs=false
+short_to_long_function_def=true
+always_for_in=true
 verbose=true
+margin=88
