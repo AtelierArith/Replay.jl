@@ -116,17 +116,18 @@ examples
 ├── sixel
 │   ├── Project.toml
 │   └── app.jl
+├── unicodefun
+│   ├── Project.toml
+│   └── app.jl
 ├── unicodeplots
 │   ├── Project.toml
 │   └── app.jl
 ├── unicodeplots_animated
 │   ├── Project.toml
-│   ├── app.jl
-│   └── lemma.jl
+│   └── app.jl
 └── use_ghostwriter
     └── app.jl
 
-12 directories, 21 files
 ```
 
 # Breaking Change
@@ -134,6 +135,9 @@ examples
 - The internal logic of the program has been changed to stabilize its operation. As a side effect, we had to make some destructive changes to the API.
 - Note that `color` kwarg of `replay` is removed since `v0.4.x` . Use `cmd="--color=yes"` or `cmd="--color=no"` instead.
 
+# Restriction
+
+- Replay.jl does not work on Windows. Please use WSL2 instead.
 
 # Acknowledgements
 
