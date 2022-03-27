@@ -116,17 +116,18 @@ examples
 ├── sixel
 │   ├── Project.toml
 │   └── app.jl
+├── unicodefun
+│   ├── Project.toml
+│   └── app.jl
 ├── unicodeplots
 │   ├── Project.toml
 │   └── app.jl
 ├── unicodeplots_animated
 │   ├── Project.toml
-│   ├── app.jl
-│   └── lemma.jl
+│   └── app.jl
 └── use_ghostwriter
     └── app.jl
 
-12 directories, 21 files
 ```
 
 # Breaking Change
