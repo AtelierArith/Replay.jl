@@ -5,7 +5,7 @@ using Crayons
 include("FakePTYs.jl")
 using .FakePTYs: open_fake_pty
 
-const CTRL_C = '\x03'
+const CTRL_C = "\x03"
 const UP_ARROW = "\e[A"
 const DOWN_ARROW = "\e[B"
 const RIGHT_ARROW = "\e[C"
