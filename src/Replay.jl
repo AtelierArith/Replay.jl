@@ -6,12 +6,14 @@ include("FakePTYs.jl")
 using .FakePTYs: open_fake_pty
 
 const CTRL_C = "\x03"
+const TAB = "\t"
 const UP_ARROW = "\e[A"
 const DOWN_ARROW = "\e[B"
 const RIGHT_ARROW = "\e[C"
 const LEFT_ARROW = "\e[D"
 
-export CTRL_C, UP_ARROW, DOWN_ARROW, RIGHT_ARROW, LEFT_ARROW
+export CTRL_C, TAB
+export UP_ARROW, DOWN_ARROW, RIGHT_ARROW, LEFT_ARROW
 export replay
 
 function clearline(; move_up::Bool=false)
