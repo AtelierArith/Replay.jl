@@ -1,12 +1,0 @@
-[?25l[?2004h[0K[32m[1mjulia> [0m[0m[7C[7Cx = 1 + 1[0K[32m[1mjulia> [0m[0m[7Cx = 1 + 1[16C
-[?2004l[0m[0m2
-
-[0K[0K[32m[1mjulia> [0m[0m[7C[7C[?2004h[0K[32m[1mjulia> [0m[0m[7C[7Cprintln("Hello World")[0K[32m[1mjulia> [0m[0m[7Cprintln("Hello World")[29C
-[?2004l[0mHello World
-
-[0K[0K[32m[1mjulia> [0m[0m[7C[7C[?2004h[0K[32m[1mjulia> [0m[0m[7C[7C@show x[0K[32m[1mjulia> [0m[0m[7C@show x[14C
-[?2004l[0mx = 2
-[0m2
-
-[0K[0K[32m[1mjulia> [0m[0m[7C[7C[?2004h[0K[32m[1mjulia> [0m[0m[7C[7Cexit()[0K[32m[1mjulia> [0m[0m[7Cexit()[13C
-[?2004l[0m
