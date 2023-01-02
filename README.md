@@ -108,10 +108,15 @@ examples
 ├── plots_with_sixel
 │   ├── Project.toml
 │   └── app.jl
+├── pythoncall
+│   ├── Project.toml
+│   └── app.jl
 ├── quietmode
 │   └── app.jl
 ├── readme
 │   ├── Project.toml
+│   └── app.jl
+├── shellmode
 │   └── app.jl
 ├── sixel
 │   ├── Project.toml
@@ -127,6 +132,8 @@ examples
 │   └── app.jl
 └── use_ghostwriter
     └── app.jl
+
+16 directories, 25 files
 
 ```
 
