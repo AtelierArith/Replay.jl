@@ -5,7 +5,7 @@ using Crayons
 include("FakePTYs.jl")
 using .FakePTYs: open_fake_pty
 
-const CTRL_C = '\x03'
+const CTRL_C = "\x03"
 const UP_ARROW = "\e[A"
 const DOWN_ARROW = "\e[B"
 const RIGHT_ARROW = "\e[C"
@@ -143,7 +143,7 @@ function replay(
                 # shell mode
                 name = :shell
                 prompt = "shell> "
-                prompt_prefix = Base.text_colors[:bold] * Base.text_color[:red]
+                prompt_prefix = Base.text_colors[:bold] * Base.text_colors[:red]
                 prompt_suffix = Base.color_normal
                 current_mode_name = name
                 (; name, prompt, prompt_prefix, prompt_suffix)
