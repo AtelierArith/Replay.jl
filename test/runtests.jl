@@ -68,6 +68,8 @@ end
     @test out == ref
 end
 
+include("inst.jl")
+
 #=
 using Replay, Test
 endexamples_dir = joinpath(pkgdir(Replay), "examples")
