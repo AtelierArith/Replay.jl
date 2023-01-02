@@ -10,7 +10,12 @@ println("Hello World")
 # Set false for daily use.
 const UPDATE_REFERENCE = false
 
+get(ENV, "CI", false) && @testset "check UPDATE_REFERENCE is false in CI" begin
+    @test UPDATE_REFERENCE == false
+end
+
 version_dir = "v$(VERSION.major).$(VERSION.minor)"
+
 mkpath(joinpath(@__DIR__, "references", version_dir))
 
 @testset "replay: color=yes" begin
@@ -18,7 +23,15 @@ mkpath(joinpath(@__DIR__, "references", version_dir))
     buf = replay(repl_script, IOBuffer(); cmd="-q --color=yes")
     out = buf |> take! |> String
 
-    UPDATE_REFERENCE && open(joinpath(@__DIR__, "references", version_dir, "replay_color_$(color)_julia.txt"), "w") do f
+    UPDATE_REFERENCE && open(
+        joinpath(
+            @__DIR__,
+            "references",
+            version_dir,
+            "replay_color_$(color)_julia.txt",
+        ),
+        "w",
+    ) do f
         write(f, out)
     end
 
@@ -32,7 +45,15 @@ end
     buf = replay(repl_script, IOBuffer(); cmd="-q --color=no")
     out = buf |> take! |> String
 
-    UPDATE_REFERENCE && open(joinpath(@__DIR__, "references", version_dir, "replay_color_$(color)_julia.txt"), "w") do f
+    UPDATE_REFERENCE && open(
+        joinpath(
+            @__DIR__,
+            "references",
+            version_dir,
+            "replay_color_$(color)_julia.txt",
+        ),
+        "w",
+    ) do f
         write(f, out)
     end
 
