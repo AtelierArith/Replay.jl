@@ -10,8 +10,14 @@ println("Hello World")
 # Set false for daily use.
 const UPDATE_REFERENCE = false
 
-get(ENV, "CI", false) && @testset "check UPDATE_REFERENCE is false in CI" begin
-    @test UPDATE_REFERENCE == false
+# Inspired by 
+# https://github.com/JuliaPlots/Plots.jl/blob/master/test/runtests.jl#L38
+is_ci() = parse(Bool, get(ENV, "CI", false))
+
+if is_ci()
+    @testset "check UPDATE_REFERENCE is false in CI" begin
+        @test UPDATE_REFERENCE == false
+    end
 end
 
 version_dir = "v$(VERSION.major).$(VERSION.minor)"
