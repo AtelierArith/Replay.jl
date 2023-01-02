@@ -15,6 +15,38 @@ const LEFT_ARROW = "\e[D"
 export CTRL_C, TAB
 export UP_ARROW, DOWN_ARROW, RIGHT_ARROW, LEFT_ARROW
 export replay
+export @inst
+
+"""
+    @inst expr
+Create a string from `expr`. It tries to output something similar to we type in Julia REPL.
+If `expr` contains `@comment <message>`, it is transformed into `# <message>`.
+"""
+macro inst(expr)
+    Base.remove_linenums!(expr)
+    lines = map(split(string(expr), "\n")) do w
+        # check that line `w` contains a macro expression
+        m = match(r"@", w)
+        if isnothing(m)
+            w
+        else
+            # Here string object `w` has a form of "<indent>#= ... =# @<macro> ..."
+            # extract <indent>
+            indent = replace(
+                w[begin:match(r"\s?#|$", w).offset],
+                "#" => "" # remove `#`
+            )
+            # remove `#= ... =#`
+            # If `@<macro>` is equal to `@comment`, we replace `@<macro>` with `#`.
+            indent * replace(w[m.offset:end], "@comment" => "#")
+        end
+    end
+    if length(lines) > 1
+        join(lines, "\n") * "\n"
+    else
+        join(lines, "\n")
+    end
+end
 
 function clearline(; move_up::Bool=false)
     buf = IOBuffer()
