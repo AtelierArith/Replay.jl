@@ -12,6 +12,6 @@ instructions = [
     "# <TAB> はタブキーを入力すると解釈してね",
     "# \\sigma<TAB>\\_i<TAB>\\^(j-1)<TAB> = 1 で",
     "# σᵢ⁽ʲ⁻¹⁾ = 1 が出るよ",
-    "\\sigma$(TAB)\\_i$(TAB)\\^(j-1)$(TAB) = 1"
+    "\\sigma$(TAB)\\_i$(TAB)\\^(j-1)$(TAB) = 1",
 ]
 replay(instructions, use_ghostwriter=true)
