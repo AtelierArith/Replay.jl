@@ -7,16 +7,41 @@ println("Hello World")
 @show x
 """
 
+# Set false for daily use.
+const UPDATE_REFERENCE = false
+
+# Inspired by 
+# https://github.com/JuliaPlots/Plots.jl/blob/master/test/runtests.jl#L38
+is_ci() = parse(Bool, get(ENV, "CI", "false"))
+
+if is_ci()
+    @testset "check UPDATE_REFERENCE is false in CI" begin
+        @test UPDATE_REFERENCE == false
+    end
+end
+
+version_dir = "v$(VERSION.major).$(VERSION.minor)"
+
+mkpath(joinpath(@__DIR__, "references", version_dir))
+
 @testset "replay: color=yes" begin
     color = "yes"
     buf = replay(repl_script, IOBuffer(); cmd="-q --color=yes")
     out = buf |> take! |> String
-    #=
-    open(joinpath(@__DIR__, "references", "replay_color_$(color)_julia.txt"), "w") do f
+
+    UPDATE_REFERENCE && open(
+        joinpath(
+            @__DIR__,
+            "references",
+            version_dir,
+            "replay_color_$(color)_julia.txt",
+        ),
+        "w",
+    ) do f
         write(f, out)
     end
-    =#
-    reftxt = joinpath(@__DIR__, "references", "replay_color_yes_julia.txt")
+
+    reftxt = joinpath(@__DIR__, "references", version_dir, "replay_color_yes_julia.txt")
     ref = join(readlines(reftxt), "\r\n")
     @test out == ref
 end
@@ -25,12 +50,20 @@ end
     color = "no"
     buf = replay(repl_script, IOBuffer(); cmd="-q --color=no")
     out = buf |> take! |> String
-    #=
-    open(joinpath(@__DIR__, "references", "replay_color_$(color)_julia.txt"), "w") do f
+
+    UPDATE_REFERENCE && open(
+        joinpath(
+            @__DIR__,
+            "references",
+            version_dir,
+            "replay_color_$(color)_julia.txt",
+        ),
+        "w",
+    ) do f
         write(f, out)
     end
-    =#
-    reftxt = joinpath(@__DIR__, "references", "replay_color_no_julia.txt")
+
+    reftxt = joinpath(@__DIR__, "references", version_dir, "replay_color_no_julia.txt")
     ref = join(readlines(reftxt), "\r\n")
     @test out == ref
 end
