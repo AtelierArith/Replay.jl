@@ -6,7 +6,7 @@ Replay your REPL instructions something like this:
 
 [![asciicast](https://asciinema.org/a/V3w9CQXAesZUgAeTIUXytkpws.svg)](https://asciinema.org/a/V3w9CQXAesZUgAeTIUXytkpws)
 
-![](docs/src/assets/logo-dark.svg)
+![](docs/src/assets/logo.svg)
 
 # Introduction
 
@@ -157,9 +157,7 @@ The idea of how to replay julia session comes from
 - [generate_precompile.jl](https://github.com/JuliaLang/julia/blob/v1.6.3/contrib/generate_precompile.jl)
 
 [@hyrodium](https://github.com/hyrodium) san provided an excellent logo for our package.
-- See [this PR #7](https://github.com/AtelierArith/Replay.jl/pull/7).
-
-![](docs/src/assets/logo.svg)
+- See [PR #7](https://github.com/AtelierArith/Replay.jl/pull/7) and [PR #55](https://github.com/AtelierArith/Replay.jl/pull/55).
 
 # Appendix
 
