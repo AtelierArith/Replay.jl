@@ -29,7 +29,7 @@ function generate_example_page(sections)
             url_script = "https://github.com/AtelierArith/Replay.jl/blob/$(COMMIT)/examples/$(name)/app.jl"
             path_record = joinpath(dir_script, "record.cast")
             script = "using Replay; include(\"$path_script\")"
-            cmd_jl = `julia $(example.options) -e $(script)`
+            cmd_jl = `julia --project=. $(example.options) -e $(script)`
             cmd_jl_str = string(cmd_jl)[begin+1:end-1]
             cmd_record = `asciinema rec $(path_record) --command $(cmd_jl_str) --overwrite`
             cmd_upload = `asciinema upload $(path_record)`
