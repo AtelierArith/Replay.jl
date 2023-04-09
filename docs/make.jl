@@ -56,11 +56,11 @@ function generate_example_page(sections)
             ```julia
             $(read(path_script, String))
             ```
-            How to replay the script in the REPL:
+            Replay the script in the REPL:
             ```
             $(cmd_jl_str)
             ```
-            The above command replays the output like this:
+            The output will be like this:
             ```@raw html
             <script src="https://asciinema.org/a/$(id_upload).js" id="asciicast-$(id_upload)" async></script>
             ```
