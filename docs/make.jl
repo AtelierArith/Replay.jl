@@ -102,7 +102,11 @@ sections = [
         (name="iris", title="RDatasets.jl and more (Iris dataset)", options=``),
     ],
     "Have fun!" => [
-        (name="use_ghostwriter", title="Why We Created Julia (with `use_ghostwriter`)", options=``),
+        (
+            name="use_ghostwriter",
+            title="Why We Created Julia (with `use_ghostwriter`)",
+            options=``,
+        ),
     ],
 ]
 
