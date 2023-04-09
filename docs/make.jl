@@ -29,11 +29,8 @@ function generate_example_page(sections)
             url_script = "https://github.com/AtelierArith/Replay.jl/blob/$(COMMIT)/examples/$(name)/app.jl"
             path_record = joinpath(dir_script, "record.cast")
             script = "using Replay; include(\"$path_script\")"
-            cmd_jl = `julia --project -e $(script)`
-            cmd_jl_str = string(cmd_jl)[2:end-1]
-            if name == "disable_color"
-                cmd_jl = `julia --color=no --project -e $(script)`
-            end
+            cmd_jl = `julia $(example.options) -e $(script)`
+            cmd_jl_str = string(cmd_jl)[begin+1:end-1]
             cmd_record = `asciinema rec $(path_record) --command $(cmd_jl_str) --overwrite`
             cmd_upload = `asciinema upload $(path_record)`
 
@@ -79,33 +76,33 @@ end
 
 sections = [
     "Basics" => [
-        (name="readme", title="Basic example in the README"),
-        (name="helloworld", title="Hello world"),
+        (name="readme", title="Basic example in the README", options=``),
+        (name="helloworld", title="Hello world", options=``),
     ],
     "More in REPL" => [
-        (name="helpmode", title="Help mode"),
-        (name="pkgmode", title="Package mode"),
-        (name="shellmode", title="Shell mode"),
-        (name="tab_completion", title="Tab completion"),
+        (name="helpmode", title="Help mode", options=``),
+        (name="pkgmode", title="Package mode", options=``),
+        (name="shellmode", title="Shell mode", options=``),
+        (name="tab_completion", title="Tab completion", options=``),
     ],
     "CLI options" => [
-        (name="disable_color", title="Disable color"),
-        (name="quietmode", title="Quiet mode"),
+        (name="disable_color", title="Disable color", options=`--color=no`),
+        (name="quietmode", title="Quiet mode", options=``),
     ],
     "Working with other packages" => [
-        (name="ohmyrepl", title="OhMyREPL.jl"),
-        (name="unicodefun", title="UnicodeFun.jl"),
-        (name="pythoncall", title="PythonCall.jl"),
-        (name="unicodeplots", title="UnicodePlots.jl"),
-        (name="unicodeplots_animated", title="UnicodePlots.jl (animated)"),
-        (name="imageinterminal", title="ImageInTerminal.jl"),
+        (name="ohmyrepl", title="OhMyREPL.jl", options=``),
+        (name="unicodefun", title="UnicodeFun.jl", options=``),
+        (name="pythoncall", title="PythonCall.jl", options=``),
+        (name="unicodeplots", title="UnicodePlots.jl", options=``),
+        (name="unicodeplots_animated", title="UnicodePlots.jl (animated)", options=``),
+        (name="imageinterminal", title="ImageInTerminal.jl", options=``),
         # Sixel output is not supported by asciinema
-        # (name="sixel", title="Sixel.jl"),
-        # (name="plots_with_sixel", title="Sixel.jl"),
-        (name="iris", title="RDatasets.jl and more (Iris dataset)"),
+        # (name="sixel", title="Sixel.jl", options=``),
+        # (name="plots_with_sixel", title="Sixel.jl", options=``),
+        (name="iris", title="RDatasets.jl and more (Iris dataset)", options=``),
     ],
     "Have fun!" => [
-        (name="use_ghostwriter", title="Why We Created Julia (with `use_ghostwriter`)"),
+        (name="use_ghostwriter", title="Why We Created Julia (with `use_ghostwriter`)", options=``),
     ],
 ]
 
