@@ -2,8 +2,7 @@ using Replay
 
 instructions = [
     "# Pkg mode",
-    "] st",
-    CTRL_C,
+    "]st",
 ]
 
 replay(instructions, use_ghostwriter=true)
