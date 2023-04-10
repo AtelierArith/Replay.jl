@@ -1,4 +1,5 @@
 Manifest.toml
 /docs/build/
-examples/*/record.cast
 /docs/src/examples.md
+/examples/*/record.cast
+/examples/pythoncall/.CondaPkg/
