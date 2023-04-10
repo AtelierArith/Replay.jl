@@ -24,14 +24,15 @@ function generate_example_page(sections)
         examples = section.second
         for example in examples
             name = example.name
+            title = example.title
             dir_script = joinpath(dir_examples, name)
             path_script = joinpath(dir_script, "app.jl")
             url_script = "https://github.com/AtelierArith/Replay.jl/blob/$(COMMIT)/examples/$(name)/app.jl"
             path_record = joinpath(dir_script, "record.cast")
-            script = "using Replay; include(\"$path_script\")"
-            cmd_jl = `julia --project=. $(example.options) -e $(script)`
+            script_jl = "using Replay; include(\"$path_script\")"
+            cmd_jl = `julia --project=. $(example.options) -e $(script_jl)`
             cmd_jl_str = string(cmd_jl)[begin+1:end-1]
-            cmd_record = `asciinema rec $(path_record) --command $(cmd_jl_str) --overwrite`
+            cmd_record = `asciinema rec $(path_record) --command $(cmd_jl_str) --overwrite --title $("Replay.jl - "*title)`
             cmd_upload = `asciinema upload $(path_record)`
 
             # Dry run not to record precompilation
@@ -44,14 +45,18 @@ function generate_example_page(sections)
             c = IOCapture.capture() do
                 run(cmd_upload)
             end
-            id_begin = findfirst("https://asciinema.org/a/", c.output)[end] + 1
-            id_end = findnext("\n", c.output, id_begin)[begin] - 1
-            id_upload = c.output[id_begin:id_end]
+            id_upload_begin = findfirst("https://asciinema.org/a/", c.output)[end] + 1
+            id_upload_end = findnext("\n", c.output, id_upload_begin)[begin] - 1
+            id_upload = c.output[id_upload_begin:id_upload_end]
+            url_upload_begin = findfirst("https://asciinema.org/a/", c.output)[begin]
+            url_upload_end = findnext("\n", c.output, url_upload_begin)[begin] - 1
+            url_upload = c.output[url_upload_begin:url_upload_end]
+            @info "The recorded asciicast was uploaded to $(url_upload)"
 
             # Add an markdown subsection of the example
             script_md *= """
 
-            ### $(example.title)
+            ### $(title)
             Script in [`$(path_script)`]($(url_script)):
             ```julia
             $(read(path_script, String))
