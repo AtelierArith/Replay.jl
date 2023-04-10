@@ -23,13 +23,11 @@ end
 end
 
 # We don't support the expression yet.
-#=
 @testset "f(x) = x" begin
 	ref = "f(x) = x"
 	tar = @inst f(x) = x
-	@test tar == ref
+	@test_broken tar == ref
 end
-=#
 
 @testset "function definition" begin
     ref = """
