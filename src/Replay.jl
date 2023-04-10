@@ -217,7 +217,11 @@ function replay(
 
     sleep(1)
     use_ghostwriter && type_with_ghost("exit()", mode)
-    write(ptm, "exit()\n")
+    if current_mode_name === :julian
+        write(ptm, "exit()\n")
+    else
+        write(ptm, "\bexit()\n")
+    end
     sleep(1)
     wait(tee)
     success(replproc) || Base.pipeline_error(replproc)
