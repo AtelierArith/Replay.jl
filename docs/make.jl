@@ -28,30 +28,17 @@ function generate_example_page(sections)
             dir_script = joinpath(dir_examples, name)
             path_script = joinpath(dir_script, "app.jl")
             url_script = "https://github.com/AtelierArith/Replay.jl/blob/$(COMMIT)/examples/$(name)/app.jl"
-            path_record = joinpath(dir_script, "record.cast")
+            path_cast = joinpath(@__DIR__, "src", "assets", "$(name).cast")
             script_jl = "using Replay; include(\"$path_script\")"
             cmd_jl = `julia --project=. $(example.options) -e $(script_jl)`
             cmd_jl_str = string(cmd_jl)[begin+1:end-1]
-            cmd_record = `asciinema rec $(path_record) --command $(cmd_jl_str) --overwrite --title $("Replay.jl - "*title)`
-            cmd_upload = `asciinema upload $(path_record)`
+            cmd_record = `asciinema rec $(path_cast) --command $(cmd_jl_str) --overwrite --title $("Replay.jl - "*title)`
 
             # Dry run not to record precompilation
             run(cmd_jl)
 
             # Record the REPL output with asciinema
             run(cmd_record)
-
-            # Upload the record and get the ID
-            c = IOCapture.capture() do
-                run(cmd_upload)
-            end
-            id_upload_begin = findfirst("https://asciinema.org/a/", c.output)[end] + 1
-            id_upload_end = findnext("\n", c.output, id_upload_begin)[begin] - 1
-            id_upload = c.output[id_upload_begin:id_upload_end]
-            url_upload_begin = findfirst("https://asciinema.org/a/", c.output)[begin]
-            url_upload_end = findnext("\n", c.output, url_upload_begin)[begin] - 1
-            url_upload = c.output[url_upload_begin:url_upload_end]
-            @info "The recorded asciicast was uploaded to $(url_upload)"
 
             # Add an markdown subsection of the example
             script_md *= """
@@ -67,7 +54,13 @@ function generate_example_page(sections)
             ```
             The output will be like this:
             ```@raw html
-            <script src="https://asciinema.org/a/$(id_upload).js" id="asciicast-$(id_upload)" async></script>
+            <div id="$(name)"></div>
+            <script>
+                AsciinemaPlayer.create('assets/$(name).cast', document.getElementById('$(name)'), {
+                    cols: 80,
+                    rows: 24
+                });
+            </script>
             ```
             """
             push!(names_example, name)
