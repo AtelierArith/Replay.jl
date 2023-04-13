@@ -125,7 +125,8 @@ makedocs(;
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
         canonical="https://AtelierArith.github.io/Replay.jl",
-        assets=String[],
+        # The following assets are downloaded from https://github.com/asciinema/asciinema-player/releases/tag/v3.3.0.
+        assets=String["assets/asciinema-player.css", "assets/asciinema-player.min.js"],
     ),
     pages=[
         "Home" => "index.md",
