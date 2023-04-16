@@ -71,7 +71,7 @@ function type_with_ghost(repl_script::AbstractString, mode)
     clearlines(H)
 end
 
-function setup_pty(julia_project="@."::AbstractString, cmd=String = "--color=yes")
+function setup_pty(julia_project="@."::AbstractString, cmd="--color=yes")
     pts, ptm = open_fake_pty()
     blackhole = Sys.isunix() ? "/dev/null" : "nul"
     julia_exepath = joinpath(Sys.BINDIR, Base.julia_exename())
@@ -115,7 +115,7 @@ function replay(
     buf::IO=stdout;
     use_ghostwriter=false,
     julia_project="@.",
-    cmd=String = "--color=yes",
+    cmd="--color=yes",
 )
     print("\x1b[?25l") # hide cursor
     replproc, ptm = setup_pty(julia_project, cmd)
