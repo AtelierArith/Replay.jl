@@ -71,7 +71,7 @@ function type_with_ghost(repl_script::AbstractString, mode)
     clearlines(H)
 end
 
-function setup_pty(julia_project="@."::AbstractString, cmd=String = "--color=yes")
+function setup_pty(julia_project="@."::AbstractString, cmd="--color=yes")
     pts, ptm = open_fake_pty()
     blackhole = Sys.isunix() ? "/dev/null" : "nul"
     julia_exepath = joinpath(Sys.BINDIR, Base.julia_exename())
@@ -95,12 +95,27 @@ function setup_pty(julia_project="@."::AbstractString, cmd=String = "--color=yes
     return replproc, ptm
 end
 
+"""
+    replay(instructions::Vector{<:AbstractString}, buf::IO; kwargs...)
+
+Replay the REPL output from given instructions.
+
+## Keyword Arguments
+
+### Replay options
+- `use_ghostwriter`: Flag to enable ghostwriter mode. (default: `true`)
+
+### Julia options
+- `julia_project`: Path to a project where julia process runs. (default: `@.`)
+- `cmd`: Additional command for julia process. (default: `"--color=yes"`)
+
+"""
 function replay(
     instructions::Vector{<:AbstractString},
     buf::IO=stdout;
     use_ghostwriter=false,
     julia_project="@.",
-    cmd=String = "--color=yes",
+    cmd="--color=yes",
 )
     print("\x1b[?25l") # hide cursor
     replproc, ptm = setup_pty(julia_project, cmd)
