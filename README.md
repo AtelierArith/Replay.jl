@@ -9,3 +9,5 @@
 Replay your REPL instructions something like this:
 
 [![asciicast](https://asciinema.org/a/V3w9CQXAesZUgAeTIUXytkpws.svg)](https://asciinema.org/a/V3w9CQXAesZUgAeTIUXytkpws)
+
+You can find more interesting examples [here](https://atelierarith.github.io/Replay.jl/dev/examples/).
