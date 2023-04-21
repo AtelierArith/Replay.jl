@@ -56,7 +56,7 @@ function generate_example_page(sections)
             ```@raw html
             <div id="$(name)"></div>
             <script>
-                AsciinemaPlayer.create('assets/$(name).cast', document.getElementById('$(name)'), {
+                AsciinemaPlayer.create('../assets/$(name).cast', document.getElementById('$(name)'), {
                     cols: 80,
                     rows: 24
                 });
