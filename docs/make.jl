@@ -91,30 +91,113 @@ end
 
 sections = [
     "Basics" => [
-        (name="readme", title="Basic example in the README", options=``, mode=:asciinema),
-        (name="helloworld", title="Hello world", options=``, mode=:asciinema),
+        (
+            name="readme",
+            title="Basic example in the README",
+            options=``,
+            mode=:asciinema,
+        ),
+        (
+            name="helloworld",
+            title="Hello world",
+            options=``,
+            mode=:asciinema
+        ),
     ],
     "More in REPL" => [
-        (name="helpmode", title="Help mode", options=``, mode=:asciinema),
-        (name="pkgmode", title="Package mode", options=``, mode=:asciinema),
-        (name="shellmode", title="Shell mode", options=``, mode=:asciinema),
-        (name="tab_completion", title="Tab completion", options=``, mode=:asciinema),
+        (
+            name="helpmode",
+            title="Help mode",
+            options=``,
+            mode=:asciinema
+        ),
+        (
+            name="pkgmode",
+            title="Package mode",
+            options=``,
+            mode=:asciinema
+        ),
+        (
+            name="shellmode",
+            title="Shell mode",
+            options=``,
+            mode=:asciinema
+        ),
+        (
+            name="tab_completion",
+            title="Tab completion",
+            options=``,
+            mode=:asciinema
+        ),
     ],
     "CLI options" => [
-        (name="disable_color", title="Disable color", options=`--color=no`, mode=:asciinema),
-        (name="quietmode", title="Quiet mode", options=``, mode=:asciinema),
+        (
+            name="disable_color",
+            title="Disable color",
+            options=`--color=no`,
+            mode=:asciinema,
+        ),
+        (
+            name="quietmode",
+            title="Quiet mode",
+            options=``,
+            mode=:asciinema
+        ),
     ],
     "Working with other packages" => [
-        (name="ohmyrepl", title="OhMyREPL.jl", options=``, mode=:asciinema),
-        (name="unicodefun", title="UnicodeFun.jl", options=``, mode=:asciinema),
-        (name="pythoncall", title="PythonCall.jl", options=``, mode=:asciinema),
-        (name="unicodeplots", title="UnicodePlots.jl", options=``, mode=:asciinema),
-        (name="unicodeplots_animated", title="UnicodePlots.jl (animated)", options=``, mode=:asciinema),
-        (name="imageinterminal", title="ImageInTerminal.jl", options=``, mode=:asciinema),
-        # Sixel output is not supported by asciinema
-        (name="sixel", title="Sixel.jl", options=``, mode=:disabled),
-        (name="plots_with_sixel", title="Plots with Sixel.jl", options=``, mode=:disabled),
-        (name="iris", title="RDatasets.jl and more (Iris dataset)", options=``, mode=:asciinema),
+        (
+            name="ohmyrepl",
+            title="OhMyREPL.jl",
+            options=``,
+            mode=:asciinema
+        ),
+        (
+            name="unicodefun",
+            title="UnicodeFun.jl",
+            options=``,
+            mode=:asciinema
+        ),
+        (
+            name="pythoncall",
+            title="PythonCall.jl",
+            options=``,
+            mode=:asciinema
+        ),
+        (
+            name="unicodeplots",
+            title="UnicodePlots.jl",
+            options=``,
+            mode=:asciinema
+        ),
+        (
+            name="unicodeplots_animated",
+            title="UnicodePlots.jl (animated)",
+            options=``,
+            mode=:asciinema,
+        ),
+        (
+            name="imageinterminal",
+            title="ImageInTerminal.jl",
+            options=``,
+            mode=:asciinema,
+        ),
+        (   name="sixel",
+            title="Sixel.jl",
+            options=``,
+            mode=:disabled
+        ),
+        (
+            name="plots_with_sixel",
+            title="Plots with Sixel.jl",
+            options=``,
+            mode=:disabled,
+        ),
+        (
+            name="iris",
+            title="RDatasets.jl and more (Iris dataset)",
+            options=``,
+            mode=:asciinema,
+        ),
     ],
     "Have fun!" => [
         (
