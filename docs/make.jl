@@ -101,7 +101,7 @@ sections = [
             name="helloworld",
             title="Hello world",
             options=``,
-            mode=:asciinema
+            mode=:asciinema,
         ),
     ],
     "More in REPL" => [
@@ -109,25 +109,25 @@ sections = [
             name="helpmode",
             title="Help mode",
             options=``,
-            mode=:asciinema
+            mode=:asciinema,
         ),
         (
             name="pkgmode",
             title="Package mode",
             options=``,
-            mode=:asciinema
+            mode=:asciinema,
         ),
         (
             name="shellmode",
             title="Shell mode",
             options=``,
-            mode=:asciinema
+            mode=:asciinema,
         ),
         (
             name="tab_completion",
             title="Tab completion",
             options=``,
-            mode=:asciinema
+            mode=:asciinema,
         ),
     ],
     "CLI options" => [
@@ -141,7 +141,7 @@ sections = [
             name="quietmode",
             title="Quiet mode",
             options=``,
-            mode=:asciinema
+            mode=:asciinema,
         ),
     ],
     "Working with other packages" => [
@@ -149,25 +149,25 @@ sections = [
             name="ohmyrepl",
             title="OhMyREPL.jl",
             options=``,
-            mode=:asciinema
+            mode=:asciinema,
         ),
         (
             name="unicodefun",
             title="UnicodeFun.jl",
             options=``,
-            mode=:asciinema
+            mode=:asciinema,
         ),
         (
             name="pythoncall",
             title="PythonCall.jl",
             options=``,
-            mode=:asciinema
+            mode=:asciinema,
         ),
         (
             name="unicodeplots",
             title="UnicodePlots.jl",
             options=``,
-            mode=:asciinema
+            mode=:asciinema,
         ),
         (
             name="unicodeplots_animated",
@@ -181,10 +181,11 @@ sections = [
             options=``,
             mode=:asciinema,
         ),
-        (   name="sixel",
+        (
+            name="sixel",
             title="Sixel.jl",
             options=``,
-            mode=:disabled
+            mode=:disabled,
         ),
         (
             name="plots_with_sixel",
