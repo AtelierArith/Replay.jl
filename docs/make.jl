@@ -113,7 +113,7 @@ sections = [
         (name="imageinterminal", title="ImageInTerminal.jl", options=``, mode=:asciinema),
         # Sixel output is not supported by asciinema
         (name="sixel", title="Sixel.jl", options=``, mode=:disabled),
-        (name="plots_with_sixel", title="Sixel.jl", options=``, mode=:disabled),
+        (name="plots_with_sixel", title="Plots with Sixel.jl", options=``, mode=:disabled),
         (name="iris", title="RDatasets.jl and more (Iris dataset)", options=``, mode=:asciinema),
     ],
     "Have fun!" => [
