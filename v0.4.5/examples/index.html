@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Examples · Replay.jl</title><script data-outdated-warner src="../assets/warner.js"></script><link rel="canonical" href="https://AtelierArith.github.io/Replay.jl/examples/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/asciinema-player.css" rel="stylesheet" type="text/css"/><script src="../assets/asciinema-player.min.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.svg" alt="Replay.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../">Replay.jl</a></span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li class="is-active"><a class="tocitem" href>Examples</a><ul class="internal"><li><a class="tocitem" href="#Basics"><span>Basics</span></a></li><li><a class="tocitem" href="#More-in-REPL"><span>More in REPL</span></a></li><li><a class="tocitem" href="#CLI-options"><span>CLI options</span></a></li><li><a class="tocitem" href="#Working-with-other-packages"><span>Working with other packages</span></a></li><li><a class="tocitem" href="#Have-fun!"><span>Have fun!</span></a></li></ul></li><li><a class="tocitem" href="../api/">API</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Examples</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Examples</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/AtelierArith/Replay.jl/blob/main/docs/src/examples.md#" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Examples"><a class="docs-heading-anchor" href="#Examples">Examples</a><a id="Examples-1"></a><a class="docs-heading-anchor-permalink" href="#Examples" title="Permalink"></a></h1><h2 id="Basics"><a class="docs-heading-anchor" href="#Basics">Basics</a><a id="Basics-1"></a><a class="docs-heading-anchor-permalink" href="#Basics" title="Permalink"></a></h2><h3 id="Basic-example-in-the-README"><a class="docs-heading-anchor" href="#Basic-example-in-the-README">Basic example in the README</a><a id="Basic-example-in-the-README-1"></a><a class="docs-heading-anchor-permalink" href="#Basic-example-in-the-README" title="Permalink"></a></h3><p>Script in <a href="https://github.com/AtelierArith/Replay.jl/blob/f0a71ba9d126b32cfcdbe8f2272d10147f5f234f/examples/readme/app.jl"><code>/home/runner/work/Replay.jl/Replay.jl/examples/readme/app.jl</code></a>:</p><pre><code class="language-julia hljs">using Replay
+
+repl_script = &quot;&quot;&quot;
+2+2
+print(&quot;&quot;)
+display([1])
+display([1 2; 3 4])
+@time 1+1
+using Pkg; Pkg.activate(&quot;.&quot;)
+]add Example
+rm Example
+st
+$CTRL_C
+&quot;&quot;&quot;
+
+replay(
+    repl_script,
+    stdout,
+    julia_project=@__DIR__,
+    use_ghostwriter=true,
+    cmd=&quot;--color=yes&quot;,
+)
+</code></pre><p>Replay the script in the REPL:</p><pre><code class="nohighlight hljs">julia --project=. -e &#39;using Replay; include(&quot;/home/runner/work/Replay.jl/Replay.jl/examples/readme/app.jl&quot;)&#39;</code></pre><p>The output will be like this:</p><div id="readme"></div>
+<script>
+    AsciinemaPlayer.create('../assets/readme.cast', document.getElementById('readme'), {
+        cols: 80,
+        rows: 24
+    });
+</script><h3 id="Hello-world"><a class="docs-heading-anchor" href="#Hello-world">Hello world</a><a id="Hello-world-1"></a><a class="docs-heading-anchor-permalink" href="#Hello-world" title="Permalink"></a></h3><p>Script in <a href="https://github.com/AtelierArith/Replay.jl/blob/f0a71ba9d126b32cfcdbe8f2272d10147f5f234f/examples/helloworld/app.jl"><code>/home/runner/work/Replay.jl/Replay.jl/examples/helloworld/app.jl</code></a>:</p><pre><code class="language-julia hljs">using Replay
+
+instructions = [
+    &quot;&quot;&quot;
+    function greet(msg::String=&quot;Hello!&quot;)
+        println(msg)
+    end
+    &quot;&quot;&quot;,
+    &quot;greet()&quot;,
+    &quot;&quot;&quot;greet(&quot;Hello, World!&quot;)&quot;&quot;&quot;,
+]
+
+replay(instructions, use_ghostwriter=true)
+</code></pre><p>Replay the script in the REPL:</p><pre><code class="nohighlight hljs">julia --project=. -e &#39;using Replay; include(&quot;/home/runner/work/Replay.jl/Replay.jl/examples/helloworld/app.jl&quot;)&#39;</code></pre><p>The output will be like this:</p><div id="helloworld"></div>
+<script>
+    AsciinemaPlayer.create('../assets/helloworld.cast', document.getElementById('helloworld'), {
+        cols: 80,
+        rows: 24
+    });
+</script><h2 id="More-in-REPL"><a class="docs-heading-anchor" href="#More-in-REPL">More in REPL</a><a id="More-in-REPL-1"></a><a class="docs-heading-anchor-permalink" href="#More-in-REPL" title="Permalink"></a></h2><h3 id="Help-mode"><a class="docs-heading-anchor" href="#Help-mode">Help mode</a><a id="Help-mode-1"></a><a class="docs-heading-anchor-permalink" href="#Help-mode" title="Permalink"></a></h3><p>Script in <a href="https://github.com/AtelierArith/Replay.jl/blob/f0a71ba9d126b32cfcdbe8f2272d10147f5f234f/examples/helpmode/app.jl"><code>/home/runner/work/Replay.jl/Replay.jl/examples/helpmode/app.jl</code></a>:</p><pre><code class="language-julia hljs">using Replay
+
+instructions = [
+    &quot;# Help mode&quot;,
+    &quot;?1&quot;,
+    &quot;?ℯ&quot;,
+]
+replay(instructions, use_ghostwriter=true)
+</code></pre><p>Replay the script in the REPL:</p><pre><code class="nohighlight hljs">julia --project=. -e &#39;using Replay; include(&quot;/home/runner/work/Replay.jl/Replay.jl/examples/helpmode/app.jl&quot;)&#39;</code></pre><p>The output will be like this:</p><div id="helpmode"></div>
+<script>
+    AsciinemaPlayer.create('../assets/helpmode.cast', document.getElementById('helpmode'), {
+        cols: 80,
+        rows: 24
+    });
+</script><h3 id="Package-mode"><a class="docs-heading-anchor" href="#Package-mode">Package mode</a><a id="Package-mode-1"></a><a class="docs-heading-anchor-permalink" href="#Package-mode" title="Permalink"></a></h3><p>Script in <a href="https://github.com/AtelierArith/Replay.jl/blob/f0a71ba9d126b32cfcdbe8f2272d10147f5f234f/examples/pkgmode/app.jl"><code>/home/runner/work/Replay.jl/Replay.jl/examples/pkgmode/app.jl</code></a>:</p><pre><code class="language-julia hljs">using Replay
+
+instructions = [
+    &quot;# Pkg mode&quot;,
+    &quot;]st&quot;,
+]
+
+replay(instructions, use_ghostwriter=true)
+</code></pre><p>Replay the script in the REPL:</p><pre><code class="nohighlight hljs">julia --project=. -e &#39;using Replay; include(&quot;/home/runner/work/Replay.jl/Replay.jl/examples/pkgmode/app.jl&quot;)&#39;</code></pre><p>The output will be like this:</p><div id="pkgmode"></div>
+<script>
+    AsciinemaPlayer.create('../assets/pkgmode.cast', document.getElementById('pkgmode'), {
+        cols: 80,
+        rows: 24
+    });
+</script><h3 id="Shell-mode"><a class="docs-heading-anchor" href="#Shell-mode">Shell mode</a><a id="Shell-mode-1"></a><a class="docs-heading-anchor-permalink" href="#Shell-mode" title="Permalink"></a></h3><p>Script in <a href="https://github.com/AtelierArith/Replay.jl/blob/f0a71ba9d126b32cfcdbe8f2272d10147f5f234f/examples/shellmode/app.jl"><code>/home/runner/work/Replay.jl/Replay.jl/examples/shellmode/app.jl</code></a>:</p><pre><code class="language-julia hljs">using Replay
+
+instructions = [
+    &quot;;echo hello&quot;,
+    CTRL_C,
+    &quot;println(\&quot;Hello\&quot;)&quot;,
+]
+
+replay(instructions, use_ghostwriter=true)
+</code></pre><p>Replay the script in the REPL:</p><pre><code class="nohighlight hljs">julia --project=. -e &#39;using Replay; include(&quot;/home/runner/work/Replay.jl/Replay.jl/examples/shellmode/app.jl&quot;)&#39;</code></pre><p>The output will be like this:</p><div id="shellmode"></div>
+<script>
+    AsciinemaPlayer.create('../assets/shellmode.cast', document.getElementById('shellmode'), {
+        cols: 80,
+        rows: 24
+    });
+</script><h3 id="Tab-completion"><a class="docs-heading-anchor" href="#Tab-completion">Tab completion</a><a id="Tab-completion-1"></a><a class="docs-heading-anchor-permalink" href="#Tab-completion" title="Permalink"></a></h3><p>Script in <a href="https://github.com/AtelierArith/Replay.jl/blob/f0a71ba9d126b32cfcdbe8f2272d10147f5f234f/examples/tab_completion/app.jl"><code>/home/runner/work/Replay.jl/Replay.jl/examples/tab_completion/app.jl</code></a>:</p><pre><code class="language-julia hljs">using Replay
+
+instructions = [
+    &quot;&quot;&quot;\&quot;\&quot;\&quot;
+    The tab key can also be used to substitute
+    LaTeX math symbols with their Unicode equivalents, 
+    and get a list of LaTeX matches as well:
+    \&quot;\&quot;\&quot;;
+    &quot;&quot;&quot;,
+    &quot;# Example:&quot;,
+    &quot;# \\sigma\\&lt;TAB&gt; で σ が出るよ.&quot;,
+    &quot;# &lt;TAB&gt; はタブキーを入力すると解釈してね&quot;,
+    &quot;# \\sigma&lt;TAB&gt;\\_i&lt;TAB&gt;\\^(j-1)&lt;TAB&gt; = 1 で&quot;,
+    &quot;# σᵢ⁽ʲ⁻¹⁾ = 1 が出るよ&quot;,
+    &quot;\\sigma$(TAB)\\_i$(TAB)\\^(j-1)$(TAB) = 1&quot;,
+]
+replay(instructions, use_ghostwriter=true)
+</code></pre><p>Replay the script in the REPL:</p><pre><code class="nohighlight hljs">julia --project=. -e &#39;using Replay; include(&quot;/home/runner/work/Replay.jl/Replay.jl/examples/tab_completion/app.jl&quot;)&#39;</code></pre><p>The output will be like this:</p><div id="tab_completion"></div>
+<script>
+    AsciinemaPlayer.create('../assets/tab_completion.cast', document.getElementById('tab_completion'), {
+        cols: 80,
+        rows: 24
+    });
+</script><h2 id="CLI-options"><a class="docs-heading-anchor" href="#CLI-options">CLI options</a><a id="CLI-options-1"></a><a class="docs-heading-anchor-permalink" href="#CLI-options" title="Permalink"></a></h2><h3 id="Disable-color"><a class="docs-heading-anchor" href="#Disable-color">Disable color</a><a id="Disable-color-1"></a><a class="docs-heading-anchor-permalink" href="#Disable-color" title="Permalink"></a></h3><p>Script in <a href="https://github.com/AtelierArith/Replay.jl/blob/f0a71ba9d126b32cfcdbe8f2272d10147f5f234f/examples/disable_color/app.jl"><code>/home/runner/work/Replay.jl/Replay.jl/examples/disable_color/app.jl</code></a>:</p><pre><code class="language-julia hljs">using Replay
+
+@assert !Base.get_have_color() &quot;please run julia with --color=no e.g. `julia --color=no examples/disable_color/app.jl`&quot;
+
+instructions = [
+    &quot;&quot;&quot;
+    function greet(msg::String=&quot;Hello!&quot;)
+        println(msg)
+    end
+    &quot;&quot;&quot;,
+    &quot;greet()&quot;,
+    &quot;&quot;&quot;greet(&quot;Hello, World!&quot;)&quot;&quot;&quot;,
+]
+
+replay(instructions, use_ghostwriter=true, cmd=&quot;--color=no&quot;)
+</code></pre><p>Replay the script in the REPL:</p><pre><code class="nohighlight hljs">julia --project=. --color=no -e &#39;using Replay; include(&quot;/home/runner/work/Replay.jl/Replay.jl/examples/disable_color/app.jl&quot;)&#39;</code></pre><p>The output will be like this:</p><div id="disable_color"></div>
+<script>
+    AsciinemaPlayer.create('../assets/disable_color.cast', document.getElementById('disable_color'), {
+        cols: 80,
+        rows: 24
+    });
+</script><h3 id="Quiet-mode"><a class="docs-heading-anchor" href="#Quiet-mode">Quiet mode</a><a id="Quiet-mode-1"></a><a class="docs-heading-anchor-permalink" href="#Quiet-mode" title="Permalink"></a></h3><p>Script in <a href="https://github.com/AtelierArith/Replay.jl/blob/f0a71ba9d126b32cfcdbe8f2272d10147f5f234f/examples/quietmode/app.jl"><code>/home/runner/work/Replay.jl/Replay.jl/examples/quietmode/app.jl</code></a>:</p><pre><code class="language-julia hljs">using Replay
+
+instructions = &quot;&quot;&quot;
+println(&quot;julia -q&quot;)
+&quot;&quot;&quot;
+
+replay(instructions, cmd=&quot;-q&quot;)
+</code></pre><p>Replay the script in the REPL:</p><pre><code class="nohighlight hljs">julia --project=. -e &#39;using Replay; include(&quot;/home/runner/work/Replay.jl/Replay.jl/examples/quietmode/app.jl&quot;)&#39;</code></pre><p>The output will be like this:</p><div id="quietmode"></div>
+<script>
+    AsciinemaPlayer.create('../assets/quietmode.cast', document.getElementById('quietmode'), {
+        cols: 80,
+        rows: 24
+    });
+</script><h2 id="Working-with-other-packages"><a class="docs-heading-anchor" href="#Working-with-other-packages">Working with other packages</a><a id="Working-with-other-packages-1"></a><a class="docs-heading-anchor-permalink" href="#Working-with-other-packages" title="Permalink"></a></h2><h3 id="OhMyREPL.jl"><a class="docs-heading-anchor" href="#OhMyREPL.jl">OhMyREPL.jl</a><a id="OhMyREPL.jl-1"></a><a class="docs-heading-anchor-permalink" href="#OhMyREPL.jl" title="Permalink"></a></h3><p>Script in <a href="https://github.com/AtelierArith/Replay.jl/blob/f0a71ba9d126b32cfcdbe8f2272d10147f5f234f/examples/ohmyrepl/app.jl"><code>/home/runner/work/Replay.jl/Replay.jl/examples/ohmyrepl/app.jl</code></a>:</p><pre><code class="language-julia hljs">using Replay
+
+instructions = raw&quot;&quot;&quot;
+using OhMyREPL
+using Printf
+println(&quot;HelloWorld&quot;)
+N = 10
+@printf &quot;%.2f %.2f %.2f\n&quot; sin(pi/4) cos(pi/4) tan(pi/4)
+@show N
+&quot;&quot;&quot;
+
+replay(instructions, use_ghostwriter=true, julia_project=@__DIR__)
+</code></pre><p>Replay the script in the REPL:</p><pre><code class="nohighlight hljs">julia --project=. -e &#39;using Replay; include(&quot;/home/runner/work/Replay.jl/Replay.jl/examples/ohmyrepl/app.jl&quot;)&#39;</code></pre><p>The output will be like this:</p><div id="ohmyrepl"></div>
+<script>
+    AsciinemaPlayer.create('../assets/ohmyrepl.cast', document.getElementById('ohmyrepl'), {
+        cols: 80,
+        rows: 24
+    });
+</script><h3 id="UnicodeFun.jl"><a class="docs-heading-anchor" href="#UnicodeFun.jl">UnicodeFun.jl</a><a id="UnicodeFun.jl-1"></a><a class="docs-heading-anchor-permalink" href="#UnicodeFun.jl" title="Permalink"></a></h3><p>Script in <a href="https://github.com/AtelierArith/Replay.jl/blob/f0a71ba9d126b32cfcdbe8f2272d10147f5f234f/examples/unicodefun/app.jl"><code>/home/runner/work/Replay.jl/Replay.jl/examples/unicodefun/app.jl</code></a>:</p><pre><code class="language-julia hljs">using Replay
+
+instructions = [&quot;using UnicodeFun&quot;, &quot;\&quot;\\\\pi\&quot; |&gt; to_latex&quot;]
+
+replay(instructions, julia_project=@__DIR__)
+</code></pre><p>Replay the script in the REPL:</p><pre><code class="nohighlight hljs">julia --project=. -e &#39;using Replay; include(&quot;/home/runner/work/Replay.jl/Replay.jl/examples/unicodefun/app.jl&quot;)&#39;</code></pre><p>The output will be like this:</p><div id="unicodefun"></div>
+<script>
+    AsciinemaPlayer.create('../assets/unicodefun.cast', document.getElementById('unicodefun'), {
+        cols: 80,
+        rows: 24
+    });
+</script><h3 id="PythonCall.jl"><a class="docs-heading-anchor" href="#PythonCall.jl">PythonCall.jl</a><a id="PythonCall.jl-1"></a><a class="docs-heading-anchor-permalink" href="#PythonCall.jl" title="Permalink"></a></h3><p>Script in <a href="https://github.com/AtelierArith/Replay.jl/blob/f0a71ba9d126b32cfcdbe8f2272d10147f5f234f/examples/pythoncall/app.jl"><code>/home/runner/work/Replay.jl/Replay.jl/examples/pythoncall/app.jl</code></a>:</p><pre><code class="language-julia hljs">using Replay
+
+repl_script = &quot;&quot;&quot;
+using PythonCall
+jlv = [1,2,3]
+pyv = Py(jlv)
+pyv.append(4)
+pyv
+jlv
+&quot;&quot;&quot;
+
+replay(
+    repl_script,
+    stdout,
+    julia_project=@__DIR__,
+    use_ghostwriter=true,
+    cmd=&quot;--color=yes&quot;,
+)
+</code></pre><p>Replay the script in the REPL:</p><pre><code class="nohighlight hljs">julia --project=. -e &#39;using Replay; include(&quot;/home/runner/work/Replay.jl/Replay.jl/examples/pythoncall/app.jl&quot;)&#39;</code></pre><p>The output will be like this:</p><div id="pythoncall"></div>
+<script>
+    AsciinemaPlayer.create('../assets/pythoncall.cast', document.getElementById('pythoncall'), {
+        cols: 80,
+        rows: 24
+    });
+</script><h3 id="UnicodePlots.jl"><a class="docs-heading-anchor" href="#UnicodePlots.jl">UnicodePlots.jl</a><a id="UnicodePlots.jl-1"></a><a class="docs-heading-anchor-permalink" href="#UnicodePlots.jl" title="Permalink"></a></h3><p>Script in <a href="https://github.com/AtelierArith/Replay.jl/blob/f0a71ba9d126b32cfcdbe8f2272d10147f5f234f/examples/unicodeplots/app.jl"><code>/home/runner/work/Replay.jl/Replay.jl/examples/unicodeplots/app.jl</code></a>:</p><pre><code class="language-julia hljs">using Replay
+
+instructions = &quot;&quot;&quot;
+using UnicodePlots
+histogram(randn(1000) .* 0.1, nbins = 15, closed = :right, xscale=:log10)
+heatmap(collect(0:30) * collect(0:30)&#39;, xfact=0.1, yfact=0.1, xoffset=-1.5, colormap=:inferno)
+&quot;&quot;&quot;
+
+replay(instructions, julia_project=@__DIR__)
+</code></pre><p>Replay the script in the REPL:</p><pre><code class="nohighlight hljs">julia --project=. -e &#39;using Replay; include(&quot;/home/runner/work/Replay.jl/Replay.jl/examples/unicodeplots/app.jl&quot;)&#39;</code></pre><p>The output will be like this:</p><div id="unicodeplots"></div>
+<script>
+    AsciinemaPlayer.create('../assets/unicodeplots.cast', document.getElementById('unicodeplots'), {
+        cols: 80,
+        rows: 24
+    });
+</script><h3 id="UnicodePlots.jl-(animated)"><a class="docs-heading-anchor" href="#UnicodePlots.jl-(animated)">UnicodePlots.jl (animated)</a><a id="UnicodePlots.jl-(animated)-1"></a><a class="docs-heading-anchor-permalink" href="#UnicodePlots.jl-(animated)" title="Permalink"></a></h3><p>Script in <a href="https://github.com/AtelierArith/Replay.jl/blob/f0a71ba9d126b32cfcdbe8f2272d10147f5f234f/examples/unicodeplots_animated/app.jl"><code>/home/runner/work/Replay.jl/Replay.jl/examples/unicodeplots_animated/app.jl</code></a>:</p><pre><code class="language-julia hljs">using Replay
+
+lemma = joinpath(@__DIR__, &quot;lemma.jl&quot;)
+
+instructions = [
+    &quot;using UnicodePlots&quot;,
+    raw&quot;&quot;&quot;
+    function clearline(; move_up::Bool = false)
+        buf = IOBuffer()
+        print(buf, &quot;\x1b[2K&quot;) # clear line
+        print(buf, &quot;\x1b[999D&quot;) # rollback the cursor
+        move_up &amp;&amp; print(buf, &quot;\x1b[1A&quot;) # move up
+        print(buf |&gt; take! |&gt; String)
+    end
+    &quot;&quot;&quot;,
+    raw&quot;&quot;&quot;
+    function clearlines(H::Integer)
+        for i = 1:H
+            clearline(move_up = true)
+        end
+    end
+    &quot;&quot;&quot;,
+    raw&quot;&quot;&quot;
+    function animate(frames::Vector{&lt;:UnicodePlots.Plot}; duration::Float64 = 0.5)
+        print(&quot;\x1b[?25l&quot;) # hidecursor
+        for (n, f) in enumerate(frames)
+            print(f)
+            str = string(f)
+            if n != length(frames)
+                sleep(duration)
+                clearlines(length(collect(eachmatch(r&quot;\n&quot;, str))))
+            end
+        end
+        print(&quot;\u001B[?25h&quot;) # unhide cursor
+    end
+    &quot;&quot;&quot;,
+    &quot;frames = [lineplot(x -&gt; sin(x - t), width = 40) for t = -2π:0.25π:2π];&quot;,
+    &quot;animate(frames)&quot;,
+]
+
+replay(instructions; julia_project=@__DIR__, use_ghostwriter=false)
+</code></pre><p>Replay the script in the REPL:</p><pre><code class="nohighlight hljs">julia --project=. -e &#39;using Replay; include(&quot;/home/runner/work/Replay.jl/Replay.jl/examples/unicodeplots_animated/app.jl&quot;)&#39;</code></pre><p>The output will be like this:</p><div id="unicodeplots_animated"></div>
+<script>
+    AsciinemaPlayer.create('../assets/unicodeplots_animated.cast', document.getElementById('unicodeplots_animated'), {
+        cols: 80,
+        rows: 24
+    });
+</script><h3 id="ImageInTerminal.jl"><a class="docs-heading-anchor" href="#ImageInTerminal.jl">ImageInTerminal.jl</a><a id="ImageInTerminal.jl-1"></a><a class="docs-heading-anchor-permalink" href="#ImageInTerminal.jl" title="Permalink"></a></h3><p>Script in <a href="https://github.com/AtelierArith/Replay.jl/blob/f0a71ba9d126b32cfcdbe8f2272d10147f5f234f/examples/imageinterminal/app.jl"><code>/home/runner/work/Replay.jl/Replay.jl/examples/imageinterminal/app.jl</code></a>:</p><pre><code class="language-julia hljs">using Replay
+
+instructions = &quot;&quot;&quot;
+using TestImages
+using ImageInTerminal
+testimage(&quot;mandril_color&quot;)
+&quot;&quot;&quot;
+
+replay(instructions, julia_project=@__DIR__)
+</code></pre><p>Replay the script in the REPL:</p><pre><code class="nohighlight hljs">julia --project=. -e &#39;using Replay; include(&quot;/home/runner/work/Replay.jl/Replay.jl/examples/imageinterminal/app.jl&quot;)&#39;</code></pre><p>The output will be like this:</p><div id="imageinterminal"></div>
+<script>
+    AsciinemaPlayer.create('../assets/imageinterminal.cast', document.getElementById('imageinterminal'), {
+        cols: 80,
+        rows: 24
+    });
+</script><h3 id="Sixel.jl"><a class="docs-heading-anchor" href="#Sixel.jl">Sixel.jl</a><a id="Sixel.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Sixel.jl" title="Permalink"></a></h3><p>Script in <a href="https://github.com/AtelierArith/Replay.jl/blob/f0a71ba9d126b32cfcdbe8f2272d10147f5f234f/examples/sixel/app.jl"><code>/home/runner/work/Replay.jl/Replay.jl/examples/sixel/app.jl</code></a>:</p><pre><code class="language-julia hljs">using Replay
+
+instructions = &quot;&quot;&quot;
+using TestImages
+using Sixel
+sixel_encode(testimage(&quot;mandril_color&quot;))
+&quot;&quot;&quot;
+
+replay(instructions, julia_project=@__DIR__)
+</code></pre><p>Replay the script in the REPL:</p><pre><code class="nohighlight hljs">julia --project=. -e &#39;using Replay; include(&quot;/home/runner/work/Replay.jl/Replay.jl/examples/sixel/app.jl&quot;)&#39;</code></pre><p>Currently, we don&#39;t have output for this example because asciinema does not supprot <a href="https://github.com/saitoha/libsixel/">SIXEL</a>. Please try it on your envionment!</p><h3 id="Plots-with-Sixel.jl"><a class="docs-heading-anchor" href="#Plots-with-Sixel.jl">Plots with Sixel.jl</a><a id="Plots-with-Sixel.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Plots-with-Sixel.jl" title="Permalink"></a></h3><p>Script in <a href="https://github.com/AtelierArith/Replay.jl/blob/f0a71ba9d126b32cfcdbe8f2272d10147f5f234f/examples/plots_with_sixel/app.jl"><code>/home/runner/work/Replay.jl/Replay.jl/examples/plots_with_sixel/app.jl</code></a>:</p><pre><code class="language-julia hljs">using Replay
+
+instructions = &quot;&quot;&quot;
+using FileIO, Sixel, Plots
+gr()
+buf = IOBuffer()
+show(buf, MIME(&quot;image/png&quot;), plot(sin, size=(1000, 750)))
+buf |&gt; load |&gt; sixel_encode
+&quot;&quot;&quot;
+
+replay(instructions, julia_project=@__DIR__)
+</code></pre><p>Replay the script in the REPL:</p><pre><code class="nohighlight hljs">julia --project=. -e &#39;using Replay; include(&quot;/home/runner/work/Replay.jl/Replay.jl/examples/plots_with_sixel/app.jl&quot;)&#39;</code></pre><p>Currently, we don&#39;t have output for this example because asciinema does not supprot <a href="https://github.com/saitoha/libsixel/">SIXEL</a>. Please try it on your envionment!</p><h3 id="RDatasets.jl-and-more-(Iris-dataset)"><a class="docs-heading-anchor" href="#RDatasets.jl-and-more-(Iris-dataset)">RDatasets.jl and more (Iris dataset)</a><a id="RDatasets.jl-and-more-(Iris-dataset)-1"></a><a class="docs-heading-anchor-permalink" href="#RDatasets.jl-and-more-(Iris-dataset)" title="Permalink"></a></h3><p>Script in <a href="https://github.com/AtelierArith/Replay.jl/blob/f0a71ba9d126b32cfcdbe8f2272d10147f5f234f/examples/iris/app.jl"><code>/home/runner/work/Replay.jl/Replay.jl/examples/iris/app.jl</code></a>:</p><pre><code class="language-julia hljs">using Replay
+
+instructions = raw&quot;&quot;&quot;
+using OhMyREPL
+
+using LinearAlgebra
+using Printf
+using Statistics
+
+using DataFrames
+using RDatasets
+using StatsPlots
+
+# use UnicodePlots.jl as backend
+unicodeplots();
+
+iris = dataset(&quot;datasets&quot;, &quot;iris&quot;);
+@show names(iris);
+N = size(iris, 1)
+@show names(iris);
+# Execute PCA
+X = Matrix(select(iris, Not(:Species)))
+X .= X .- mean(X, dims=1)
+Σ = (X&#39; * X)/N # will be the covariance matrix for iris dataset
+e = eigen(Σ, sortby = -);
+# display  eigen values in descending order
+e.values
+# eigen vectors
+e.vectors
+
+@printf &quot;1st contribution ratio = %.2f percent\n&quot; 100e.values[1]/sum(e.values)
+@printf &quot;2nd contribution ratio = %.2f percent\n&quot; 100e.values[2]/sum(e.values)
+
+# Visualize the reduced data via PCA
+topk = 2;
+reduced_data = DataFrame(X * e.vectors[:, 1:topk], [:X, :Y]);
+@df reduced_data scatter(:X, :Y, group=iris.Species)
+&quot;&quot;&quot;
+
+replay(instructions, use_ghostwriter=true, julia_project=@__DIR__)
+</code></pre><p>Replay the script in the REPL:</p><pre><code class="nohighlight hljs">julia --project=. -e &#39;using Replay; include(&quot;/home/runner/work/Replay.jl/Replay.jl/examples/iris/app.jl&quot;)&#39;</code></pre><p>The output will be like this:</p><div id="iris"></div>
+<script>
+    AsciinemaPlayer.create('../assets/iris.cast', document.getElementById('iris'), {
+        cols: 80,
+        rows: 24
+    });
+</script><h2 id="Have-fun!"><a class="docs-heading-anchor" href="#Have-fun!">Have fun!</a><a id="Have-fun!-1"></a><a class="docs-heading-anchor-permalink" href="#Have-fun!" title="Permalink"></a></h2><h3 id="Why-We-Created-Julia-(with-use_ghostwriter)"><a class="docs-heading-anchor" href="#Why-We-Created-Julia-(with-use_ghostwriter)">Why We Created Julia (with <code>use_ghostwriter</code>)</a><a id="Why-We-Created-Julia-(with-use_ghostwriter)-1"></a><a class="docs-heading-anchor-permalink" href="#Why-We-Created-Julia-(with-use_ghostwriter)" title="Permalink"></a></h3><p>Script in <a href="https://github.com/AtelierArith/Replay.jl/blob/f0a71ba9d126b32cfcdbe8f2272d10147f5f234f/examples/use_ghostwriter/app.jl"><code>/home/runner/work/Replay.jl/Replay.jl/examples/use_ghostwriter/app.jl</code></a>:</p><pre><code class="language-julia hljs">using Replay
+
+instructions = &quot;&quot;&quot;
+&quot;# Why We Created Julia&quot;;
+&quot;# We are greedy: we want more.)&quot;;
+&quot;# We want a language that&#39;s open source, with a liberal license.&quot;;
+&quot;# We want the speed of C with the dynamism of Ruby.&quot;;
+&quot;# We want a language that&#39;s homoiconic with true macros like Lisp, &quot;;
+&quot;# but with obvious, familiar mathematical notation like Matlab.&quot;;
+&quot;# We want something as usable for general programming as Python, &quot;;
+&quot;# as easy for statistics as R, &quot;;
+&quot;# as natural for string processing as Perl, &quot;;
+&quot;# as powerful for linear algebra as Matlab, &quot;;
+&quot;# as good at gluing programs together as the shell.&quot;;
+&quot;# Something that is dirt simple to learn, &quot;;
+&quot;# yet keeps the most serious hackers happy.&quot;;
+&quot;# We want it interactive and we want it compiled.)&quot;;
+&quot;(Did we mention it should be as fast as C?))&quot;;
+&quot;&quot;&quot;
+
+replay(instructions, use_ghostwriter=true)
+</code></pre><p>Replay the script in the REPL:</p><pre><code class="nohighlight hljs">julia --project=. -e &#39;using Replay; include(&quot;/home/runner/work/Replay.jl/Replay.jl/examples/use_ghostwriter/app.jl&quot;)&#39;</code></pre><p>The output will be like this:</p><div id="use_ghostwriter"></div>
+<script>
+    AsciinemaPlayer.create('../assets/use_ghostwriter.cast', document.getElementById('use_ghostwriter'), {
+        cols: 80,
+        rows: 24
+    });
+</script></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home</a><a class="docs-footer-nextpage" href="../api/">API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.24 on <span class="colophon-date" title="Sunday 23 April 2023 03:18">Sunday 23 April 2023</span>. Using Julia version 1.8.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
