@@ -18,5 +18,5 @@ replay(
     stdout,
     julia_project=@__DIR__,
     use_ghostwriter=true,
-    cmd="--color=yes",
+    cmd=`--color=yes`,
 )

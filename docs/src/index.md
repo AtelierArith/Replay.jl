@@ -51,7 +51,7 @@ st
 $CTRL_C
 """
 
-replay(repl_script, stdout, julia_project=@__DIR__, use_ghostwriter=true, cmd="--color=yes")
+replay(repl_script, stdout, julia_project=@__DIR__, use_ghostwriter=true, cmd=`--color=yes`)
 $ julia --project=@. -e 'using Pkg; Pkg.instantiate()'
 $ julia --project=@. ./examples/readme/app.jl
 $ # Below is optional
@@ -68,7 +68,7 @@ $ julia --project=@. ./examples/helloworld/app.jl > output.txt
 $ cat output.txt
 ```
 
-Tips: you can set `replay(instructions; cmd="--color=no")` as necessary.
+Tips: you can set ```replay(instructions; cmd=`--color=no`)``` as necessary.
 
 ```julia
 $ julia examples/disable_color/app.jl > output.txt
@@ -88,6 +88,9 @@ $ asciinema play output.cast
 See [issue #23](https://github.com/AtelierArith/Replay.jl/issues/23) to learn more.
 
 ## Breaking Changes
+
+### `v0.5.x`
+- The type of the keyword argument `cmd` has been changed from `String` to `Cmd`.
 
 ### `v0.4.x`
 - The keyword argument `color` of [`replay`](@ref) is removed. Use `cmd="--color=yes"` or `cmd="--color=no"` instead.
