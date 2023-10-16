@@ -103,6 +103,12 @@ sections = [
             options=``,
             mode=:asciinema,
         ),
+        (
+            name="deparse_macro",
+            title="`@deparse` macro",
+            options=``,
+            mode=:asciinema,
+        ),
     ],
     "More in REPL" => [
         (
