@@ -1,31 +1,31 @@
-@testset "@inst 1" begin
+@testset "@deparse 1" begin
     ref = "1"
-    tar = @inst 1
+    tar = @deparse 1
     @test tar == ref
 end
 
-@testset "@inst @show x" begin
+@testset "@deparse @show x" begin
     ref = "@show x"
-    tar = @inst @show x
+    tar = @deparse @show x
     @test tar == ref
 end
 
-@testset "@inst println(\"Hello World\")" begin
+@testset "@deparse println(\"Hello World\")" begin
     ref = "println(\"Hello World\")"
-    tar = @inst println("Hello World")
+    tar = @deparse println("Hello World")
     @test tar == ref
 end
 
 @testset "using LinearAlgebra: dot" begin
     ref = "using LinearAlgebra: dot"
-    tar = @inst using LinearAlgebra: dot
+    tar = @deparse using LinearAlgebra: dot
     @test tar == ref
 end
 
 # We don't support the expression yet.
 @testset "f(x) = x" begin
     ref = "f(x) = x"
-    tar = @inst f(x) = x
+    tar = @deparse f(x) = x
     @test_broken tar == ref
 end
 
@@ -37,7 +37,7 @@ end
         return y
     end
     """
-    tar = @inst function f(x)
+    tar = @deparse function f(x)
         y = 2x + 1
         z = y^3
         return y
@@ -55,7 +55,7 @@ end
         return y
     end
     """
-    tar = @inst function f(x)
+    tar = @deparse function f(x)
         @comment linear transformation
         y = 2x
         @comment square root of y
@@ -77,7 +77,7 @@ end
         2x + 2
     end
     """
-    tar = @inst function f(x)
+    tar = @deparse function f(x)
         @comment This is a comment
         if x > 0
             @comment x is larger than 0

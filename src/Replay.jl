@@ -15,14 +15,14 @@ const LEFT_ARROW = "\e[D"
 export CTRL_C, TAB
 export UP_ARROW, DOWN_ARROW, RIGHT_ARROW, LEFT_ARROW
 export replay
-export @inst
+export @deparse
 
 """
-    @inst expr
+    @deparse expr
 Create a string from `expr`. It tries to output something similar to we type in Julia REPL.
 If `expr` contains `@comment <message>`, it is transformed into `# <message>`.
 """
-macro inst(expr)
+macro deparse(expr)
     Base.remove_linenums!(expr)
     lines = map(split(string(expr), "\n")) do w
         # check that line `w` contains a macro expression
