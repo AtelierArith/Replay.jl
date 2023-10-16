@@ -222,6 +222,7 @@ makedocs(;
         canonical="https://AtelierArith.github.io/Replay.jl",
         # The following assets are downloaded from https://github.com/asciinema/asciinema-player/releases/tag/v3.3.0.
         assets=String["assets/asciinema-player.css", "assets/asciinema-player.min.js"],
+        repolink="https://github.com/AtelierArith/Replay.jl"
     ),
     pages=[
         "Home" => "index.md",
