@@ -14,7 +14,7 @@ Let’s assume you have to record your screen to explain something about Julia t
 You are supposed to input your source code by hand line by line.
 Imagine that you type the following lines.
 
-```
+```julia-repl
 julia> 2+2
 julia> print("")
 julia> display([1])
