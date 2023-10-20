@@ -17,7 +17,7 @@ export UP_ARROW, DOWN_ARROW, RIGHT_ARROW, LEFT_ARROW
 export replay
 export @deparse
 
-"""
+@doc raw"""
     @deparse expr
 Create a string from `expr`. It tries to output something similar to we type in Julia REPL.
 If `expr` contains `@comment <message>`, it is transformed into `# <message>`.
