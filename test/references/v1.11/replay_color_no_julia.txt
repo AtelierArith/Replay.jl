@@ -1,0 +1,12 @@
+[?25l[?2004h[0Kjulia> [7C[7Cx = 1 + 1[0Kjulia> [7Cx = 1 + 1[16C
+[?2004l2
+
+[0K[0Kjulia> [7C[7C[?2004h[0Kjulia> [7C[7Cprin[0Kjulia> [7Cprin[11Ct[1Dt[0Kjulia> [7Cprint[12C[0Kl[0Kjulia> [7Cprintl[13Cn[1Dn[0Kjulia> [7Cprintln[14C[0K("Hello World")[0Kjulia> [7Cprintln("Hello World")[29C
+[?2004lHello World
+
+[0K[0Kjulia> [7C[7C[?2004h[0Kjulia> [7C[7C@sh[0Kjulia> [7C@sh[10Cow[2Do[0Kjulia> [7C@sho[11Cw[1Dw[0Kjulia> [7C@show[12C[0K x[0Kjulia> [7C@show x[14C
+[?2004lx = 2
+2
+
+[0K[0Kjulia> [7C[7C[?2004h[0Kjulia> [7C[7Cexi[0Kjulia> [7Cexi[10Ct[1Dt[0Kjulia> [7Cexit[11C[0K()[0Kjulia> [7Cexit()[13C
+[?2004l
