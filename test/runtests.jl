@@ -26,7 +26,7 @@ mkpath(joinpath(@__DIR__, "references", version_dir))
 
 @testset "replay: color=yes" begin
     color = "yes"
-    buf = replay(repl_script, IOBuffer(); cmd="-q --color=yes")
+    buf = replay(repl_script, IOBuffer(); cmd=`-q --color=yes`)
     out = buf |> take! |> String
 
     UPDATE_REFERENCE && open(
@@ -48,7 +48,7 @@ end
 
 @testset "replay: color=no" begin
     color = "no"
-    buf = replay(repl_script, IOBuffer(); cmd="-q --color=no")
+    buf = replay(repl_script, IOBuffer(); cmd=`-q --color=no`)
     out = buf |> take! |> String
 
     UPDATE_REFERENCE && open(

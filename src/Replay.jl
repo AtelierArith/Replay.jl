@@ -71,7 +71,7 @@ function type_with_ghost(repl_script::AbstractString, mode)
     clearlines(H)
 end
 
-function setup_pty(julia_project="@."::AbstractString, cmd="--color=yes")
+function setup_pty(julia_project="@."::AbstractString, cmd::Cmd=`--color=yes`)
     pts, ptm = open_fake_pty()
     blackhole = Sys.isunix() ? "/dev/null" : "nul"
     julia_exepath = joinpath(Sys.BINDIR, Base.julia_exename())
@@ -84,7 +84,7 @@ function setup_pty(julia_project="@."::AbstractString, cmd="--color=yes")
         run(`$(julia_exepath) -e 'using Pkg; Pkg.instantiate()'`)
         # Initialize REPL
         run(
-            ```$(julia_exepath) -i -e 'print("\x1b[?25l")' $(split(cmd))```,
+            ```$(julia_exepath) -i -e 'print("\x1b[?25l")' $cmd```,
             pts,
             pts,
             pts;
@@ -115,7 +115,7 @@ function replay(
     buf::IO=stdout;
     use_ghostwriter=false,
     julia_project="@.",
-    cmd="--color=yes",
+    cmd::Cmd=`--color=yes`,
 )
     print("\x1b[?25l") # hide cursor
     replproc, ptm = setup_pty(julia_project, cmd)
