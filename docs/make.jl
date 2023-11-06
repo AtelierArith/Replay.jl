@@ -5,8 +5,9 @@ using IOCapture
 DocMeta.setdocmeta!(Replay, :DocTestSetup, :(using Replay); recursive=true)
 
 COMMIT::String = read(`git rev-parse HEAD`, String)[begin:end-1]
+SKIP_EXISTING_CAST = false
 
-function generate_example_page(sections)
+function generate_example_page(sections; skip_existing_cast=true)
     path_md = joinpath(@__DIR__, "src", "examples.md")
     script_md = """
     # Examples
@@ -51,10 +52,12 @@ function generate_example_page(sections)
                 path_cast = joinpath(@__DIR__, "src", "assets", "$(name).cast")
                 cmd_record = `asciinema rec $(path_cast) --command $(cmd_jl_str) --overwrite --title $("Replay.jl - "*title)`
 
-                # Dry run not to record precompilation
-                run(cmd_jl)
-                # Record the REPL output with asciinema
-                run(cmd_record)
+                if isfile(path_cast) && !skip_existing_cast
+                    # Dry run not to record precompilation
+                    run(cmd_jl)
+                    # Record the REPL output with asciinema
+                    run(cmd_record)
+                end
 
                 # Add the output of the example
                 script_md *= """
@@ -216,7 +219,7 @@ sections = [
     ],
 ]
 
-generate_example_page(sections)
+generate_example_page(sections; skip_existing_cast=SKIP_EXISTING_CAST)
 
 makedocs(;
     modules=[Replay],
