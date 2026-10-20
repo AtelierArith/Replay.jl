@@ -26,7 +26,13 @@ mkpath(joinpath(@__DIR__, "references", version_dir))
 
 @testset "replay: color=yes" begin
     color = "yes"
-    buf = replay(repl_script, IOBuffer(); cmd=`-q --color=yes`)
+    buf = IOBuffer()
+    try
+        replay(repl_script, buf; cmd=`-q --color=yes`)
+    catch
+        @error "Captured REPL output" output = String(take!(buf))
+        rethrow()
+    end
     out = buf |> take! |> String
 
     UPDATE_REFERENCE && open(
@@ -42,13 +48,27 @@ mkpath(joinpath(@__DIR__, "references", version_dir))
     end
 
     reftxt = joinpath(@__DIR__, "references", version_dir, "replay_color_yes_julia.txt")
-    ref = join(readlines(reftxt), "\r\n")
-    @test out == ref
+    if isfile(reftxt) && !Sys.iswindows()
+        ref = join(readlines(reftxt), "\r\n")
+        @test out == ref
+    else
+        # Terminal escape sequences change across Julia versions and platforms.
+        plain = replace(out, r"\e\[[0-?]*[ -/]*[@-~]" => "")
+        @test occursin(r"(?m)^Hello World\r?$", plain)
+        @test occursin(r"(?m)^x = 2\r?$", plain)
+        @test occursin("julia>", out)
+    end
 end
 
 @testset "replay: color=no" begin
     color = "no"
-    buf = replay(repl_script, IOBuffer(); cmd=`-q --color=no`)
+    buf = IOBuffer()
+    try
+        replay(repl_script, buf; cmd=`-q --color=no`)
+    catch
+        @error "Captured REPL output" output = String(take!(buf))
+        rethrow()
+    end
     out = buf |> take! |> String
 
     UPDATE_REFERENCE && open(
@@ -64,8 +84,16 @@ end
     end
 
     reftxt = joinpath(@__DIR__, "references", version_dir, "replay_color_no_julia.txt")
-    ref = join(readlines(reftxt), "\r\n")
-    @test out == ref
+    if isfile(reftxt) && !Sys.iswindows()
+        ref = join(readlines(reftxt), "\r\n")
+        @test out == ref
+    else
+        # Terminal escape sequences change across Julia versions and platforms.
+        plain = replace(out, r"\e\[[0-?]*[ -/]*[@-~]" => "")
+        @test occursin(r"(?m)^Hello World\r?$", plain)
+        @test occursin(r"(?m)^x = 2\r?$", plain)
+        @test occursin("julia>", out)
+    end
 end
 
 include("inst.jl")
@@ -85,3 +113,17 @@ for example in readdir(examples_dir)
     end
 end
 =#
+
+include("recordings.jl")
+
+if Sys.iswindows()
+    @testset "Windows retains LineEdit tab completion" begin
+        buf = replay(
+            ["\\alpha$(TAB) = 7", "?nothing", "@show α"],
+            IOBuffer();
+            cmd=`-q --color=no`,
+        )
+        plain = replace(String(take!(buf)), r"\e\[[0-?]*[ -/]*[@-~]" => "")
+        @test occursin(r"(?m)^α = 7\r?$", plain)
+    end
+end

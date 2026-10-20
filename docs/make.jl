@@ -1,6 +1,6 @@
 using Replay
 using Documenter
-using IOCapture
+include("recordings.jl")
 
 DocMeta.setdocmeta!(Replay, :DocTestSetup, :(using Replay); recursive=true)
 
@@ -52,12 +52,7 @@ function generate_example_page(sections; skip_existing_cast=true)
                 path_cast = joinpath(@__DIR__, "src", "assets", "$(name).cast")
                 cmd_record = `asciinema rec $(path_cast) --command $(cmd_jl_str) --overwrite --title $("Replay.jl - "*title)`
 
-                if isfile(path_cast) && !skip_existing_cast
-                    # Dry run not to record precompilation
-                    run(cmd_jl)
-                    # Record the REPL output with asciinema
-                    run(cmd_record)
-                end
+                ensure_recording(path_cast, cmd_jl, cmd_record; skip_existing_cast)
 
                 # Add the output of the example
                 script_md *= """

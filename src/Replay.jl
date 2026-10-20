@@ -119,6 +119,24 @@ function setup_pty(julia_project="@."::AbstractString, cmd::Cmd=`--color=yes`)
     pts, ptm = open_fake_pty()
     blackhole = Sys.isunix() ? "/dev/null" : "nul"
     julia_exepath = joinpath(Sys.BINDIR, Base.julia_exename())
+    # The Windows transport is a named pipe, not a real Cygwin terminal. Older
+    # Julia REPLs call `stty` on it when entering raw mode, which aborts startup.
+    # Override raw-mode switching only inside this dedicated child process;
+    # the parent Julia session and its real terminal are never modified.
+    startup = if Sys.iswindows()
+        raw"""
+        pushfirst!(LOAD_PATH, Sys.STDLIB)
+        using REPL
+        popfirst!(LOAD_PATH)
+        @eval REPL.Terminals function raw!(t::TTYTerminal, raw::Bool)
+            Base.check_open(t.in_stream)
+            return true
+        end
+        print("\x1b[?25l")
+        """
+    else
+        raw"""print("\x1b[?25l")"""
+    end
     replproc = withenv(
         "JULIA_HISTORY" => blackhole,
         "JULIA_PROJECT" => "$julia_project",
@@ -128,7 +146,7 @@ function setup_pty(julia_project="@."::AbstractString, cmd::Cmd=`--color=yes`)
         run(`$(julia_exepath) -e 'using Pkg; Pkg.instantiate()'`)
         # Initialize REPL
         run(
-            ```$(julia_exepath) -i -e 'print("\x1b[?25l")' $cmd```,
+            `$(julia_exepath) -i -e $startup $cmd`,
             pts,
             pts,
             pts;
