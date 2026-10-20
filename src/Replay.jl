@@ -125,7 +125,9 @@ function setup_pty(julia_project="@."::AbstractString, cmd::Cmd=`--color=yes`)
     # the parent Julia session and its real terminal are never modified.
     startup = if Sys.iswindows()
         raw"""
+        pushfirst!(LOAD_PATH, Sys.STDLIB)
         using REPL
+        popfirst!(LOAD_PATH)
         @eval REPL.Terminals function raw!(t::TTYTerminal, raw::Bool)
             Base.check_open(t.in_stream)
             return true
