@@ -115,3 +115,15 @@ end
 =#
 
 include("recordings.jl")
+
+if Sys.iswindows()
+    @testset "Windows retains LineEdit tab completion" begin
+        buf = replay(
+            ["\\alpha$(TAB) = 7", "?nothing", "@show α"],
+            IOBuffer();
+            cmd=`-q --color=no`,
+        )
+        plain = replace(String(take!(buf)), r"\e\[[0-?]*[ -/]*[@-~]" => "")
+        @test occursin(r"(?m)^α = 7\r?$", plain)
+    end
+end
