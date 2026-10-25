@@ -17,6 +17,7 @@
         ],
         IOBuffer();
         cmd=`-q --color=no`,
+        julia_project=dirname(Base.active_project()),
     )
     plain = replace(String(take!(buf)), r"\e\[[0-?]*[ -/]*[@-~]" => "")
     @test occursin(r"(?m)^choice = 3\r?$", plain)
@@ -29,6 +30,7 @@ end
         ["x = 1 + 1", "@show x"], IOBuffer();
         cmd=`-q --color=no -e 'using REPL; atreplinit(repl -> (repl.interface = REPL.setup_interface(repl); REPL.numbered_prompt!(repl)))'`,
         startup_prompt="In [1]: ",
+        julia_project=dirname(Base.active_project()),
         prompt_delimiter="]: ",
     )
     plain = replace(String(take!(buf)), r"\e\[[0-?]*[ -/]*[@-~]" => "")
