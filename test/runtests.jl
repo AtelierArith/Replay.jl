@@ -98,24 +98,6 @@ end
 
 include("inst.jl")
 
-#=
-using Replay, Test
-endexamples_dir = joinpath(pkgdir(Replay), "examples")
-examples_dir = joinpath(pkgdir(Replay), "examples")
-for example in readdir(examples_dir)
-    example == "disable_color" && continue
-    @testset "$example" begin
-        apppath = joinpath(examples_dir, example, "app.jl")
-        julia_exepath = joinpath(Sys.BINDIR::String, Base.julia_exename())
-        @info "running $(example)"
-        r = run(`$(julia_exepath) $(apppath)`)
-        @test r.exitcode == 0
-    end
-end
-=#
-
-include("recordings.jl")
-
 if Sys.iswindows()
     @testset "Windows retains LineEdit tab completion" begin
         buf = replay(
