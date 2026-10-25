@@ -45,7 +45,7 @@ jobs:
       pages: write
     steps:
       - name: Check existing Pages configuration
-        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -63,14 +63,14 @@ jobs:
       - name: Build documentation
         run: julia --project=docs docs/make.jl
       - name: Deploy documentation
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
         run: julia --project=docs docs/deploy.jl
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # GITHUB_TOKEN pushes do not automatically trigger a Pages build.
       # Explicitly build the existing gh-pages source; do not alter site settings.
       - name: Request Pages publication
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds"
