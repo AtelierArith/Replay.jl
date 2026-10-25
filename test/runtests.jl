@@ -127,3 +127,5 @@ if Sys.iswindows()
         @test occursin(r"(?m)^α = 7\r?$", plain)
     end
 end
+
+include("prompts.jl")

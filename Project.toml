@@ -9,11 +9,12 @@ Sockets = "6462fe0b-24de-5631-8697-dd941f90decc"
 
 [compat]
 Crayons = "4"
-julia = "1.6"
+julia = "1.10"
 
 [extras]
+REPL = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Pkg", "Test"]
+test = ["Pkg", "REPL", "Test"]

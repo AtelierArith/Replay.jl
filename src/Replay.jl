@@ -157,7 +157,7 @@ function setup_pty(julia_project="@."::AbstractString, cmd::Cmd=`--color=yes`)
     return replproc, ptm
 end
 
-"""
+@doc raw"""
     replay(instructions::Vector{<:AbstractString}, buf::IO; kwargs...)
 
 Replay the REPL output from given instructions.
@@ -165,11 +165,46 @@ Replay the REPL output from given instructions.
 ## Keyword Arguments
 
 ### Replay options
-- `use_ghostwriter`: Flag to enable ghostwriter mode. (default: `true`)
+- `use_ghostwriter`: Flag to enable ghostwriter mode. (default: `false`)
+
+- `startup_prompt`: Text to wait for when the child REPL starts. (default: `"julia>"`)
+- `prompt_delimiter`: Text ending each subsequent prompt. (default: `"> "`)
+  For numbered prompts use `startup_prompt="In [1]: "`, `prompt_delimiter="]: "`,
+  and leave `use_ghostwriter=false`; ghostwriter assumes the standard prompts.
 
 ### Julia options
 - `julia_project`: Path to a project where julia process runs. (default: `@.`)
 - `cmd`: Additional command for julia process. (default: `"--color=yes"`)
+
+### Numbered prompts
+
+Initialize Julia's REPL interface before enabling numbered prompts:
+
+```julia
+replay(["1 + 1", "ans * 2"];
+    cmd=`-q --color=no -e 'using REPL; atreplinit(repl -> (repl.interface = REPL.setup_interface(repl); REPL.numbered_prompt!(repl)))'`,
+    startup_prompt="In [1]: ", prompt_delimiter="]: ")
+```
+
+### Interactive menus
+
+ASCII `REPL.TerminalMenus` menus can be replayed with the default prompt delimiter.
+Put the request and its response in separate instructions and use a carriage return
+(`"\r"`) to confirm a selection:
+
+```julia
+replay([
+    "using REPL.TerminalMenus",
+    "menu = RadioMenu([\"apple\", \"orange\"]);",
+    "choice = request(\"Choose fruit:\", menu)",
+    "$(DOWN_ARROW)\r",
+    "@show choice",
+])
+```
+
+Use `"q"` to cancel a TerminalMenus request. Menu requests must display the configured
+`prompt_delimiter`; arbitrary full-screen TUIs or menus with different cursor styles
+are not automatically detected. Keep `use_ghostwriter=false` for raw menu keystrokes.
 
 """
 function replay(
@@ -178,7 +213,14 @@ function replay(
     use_ghostwriter=false,
     julia_project="@.",
     cmd::Cmd=`--color=yes`,
+    startup_prompt::AbstractString="julia>",
+    prompt_delimiter::AbstractString="> ",
 )
+    isempty(startup_prompt) && throw(ArgumentError("startup_prompt must not be empty"))
+    isempty(prompt_delimiter) && throw(ArgumentError("prompt_delimiter must not be empty"))
+    if use_ghostwriter && (startup_prompt != "julia>" || prompt_delimiter != "> ")
+        throw(ArgumentError("custom prompts require use_ghostwriter=false"))
+    end
     print("\x1b[?25l") # hide cursor
     replproc, ptm = setup_pty(julia_project, cmd)
     # Prepare a background process to copy output from process until `pts` is closed
@@ -200,7 +242,7 @@ function replay(
         end
     end
     # wait for the definitive prompt before start writing to the TTY
-    readuntil(output_copy, "julia>")
+    readuntil(output_copy, startup_prompt)
     sleep(0.1)
     readavailable(output_copy)
 
@@ -289,7 +331,7 @@ function replay(
         # wait for the next prompt-like to appear
         # NOTE: this is rather inaccurate because the Pkg REPL mode is a special flower
         readuntil(output_copy, "\n")
-        readuntil(output_copy, "> ")
+        readuntil(output_copy, prompt_delimiter)
     end
 
     sleep(1)

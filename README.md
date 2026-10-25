@@ -10,4 +10,7 @@ Replay your REPL instructions something like this:
 
 [![asciicast](https://asciinema.org/a/V3w9CQXAesZUgAeTIUXytkpws.svg)](https://asciinema.org/a/V3w9CQXAesZUgAeTIUXytkpws)
 
-You can find more interesting examples [here](https://atelierarith.github.io/Replay.jl/dev/examples/).
+See the [minimal example and API manual](https://atelierarith.github.io/Replay.jl/dev/)
+and the full [ReplayGallery.jl examples](https://github.com/AtelierArith/ReplayGallery.jl).
+
+Tested Julia versions: latest stable (`1`) and current LTS (`lts`).
