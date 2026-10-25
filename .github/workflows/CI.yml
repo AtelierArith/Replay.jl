@@ -19,7 +19,6 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - '1.6'
           - 'lts'
           - '1'
         os:
@@ -40,7 +39,7 @@ jobs:
   docs:
     name: Documentation
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 15
     permissions:
       contents: write
       pages: write
@@ -53,22 +52,21 @@ jobs:
           gh api "repos/$GITHUB_REPOSITORY/pages" > "$RUNNER_TEMP/pages.json"
           jq '{build_type, source}' "$RUNNER_TEMP/pages.json"
           jq -e '.build_type == "legacy" and .source.branch == "gh-pages" and .source.path == "/"' "$RUNNER_TEMP/pages.json"
-      - name: Install asciinema
-        run: pipx install "asciinema<3"
       - uses: actions/checkout@v7
       - uses: julia-actions/setup-julia@v3
         with:
-          version: '1.10'
+          version: 'lts'
+      - uses: julia-actions/cache@v3
       - uses: julia-actions/julia-buildpkg@v1
-      - uses: julia-actions/julia-docdeploy@v1
+      - name: Instantiate documentation environment
+        run: julia --project=docs -e 'using Pkg; Pkg.develop(path=pwd()); Pkg.instantiate()'
+      - name: Build documentation
+        run: julia --project=docs docs/make.jl
+      - name: Deploy documentation
+        if: github.event_name == 'push'
+        run: julia --project=docs docs/deploy.jl
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: |
-          julia --project=docs -e '
-            using Documenter: DocMeta, doctest
-            using Replay
-            DocMeta.setdocmeta!(Replay, :DocTestSetup, :(using Replay); recursive=true)
-            doctest(Replay)'
       # GITHUB_TOKEN pushes do not automatically trigger a Pages build.
       # Explicitly build the existing gh-pages source; do not alter site settings.
       - name: Request Pages publication
