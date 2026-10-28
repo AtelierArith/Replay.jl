@@ -7,6 +7,8 @@ on:
 jobs:
   TagBot:
     if: github.event_name == 'workflow_dispatch' || github.actor == 'JuliaTagBot'
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: JuliaRegistries/TagBot@v1
