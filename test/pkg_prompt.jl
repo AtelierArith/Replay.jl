@@ -3,8 +3,10 @@ using Replay
 using Test
 using Pkg
 
-canonical_pkg_prompt() = isdefined(Replay.REPL, :Pkg_promptf) ?
+function canonical_pkg_prompt()
+    isdefined(Replay.REPL, :Pkg_promptf) ?
     Replay.REPL.Pkg_promptf() : Pkg.REPLMode.promptf()
+end
 
 @testset "project-qualified ghostwriter Pkg prompts" begin
     mktempdir() do dir
