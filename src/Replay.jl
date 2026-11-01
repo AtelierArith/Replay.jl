@@ -51,18 +51,14 @@ function _prompt_repl()
     return _PROMPT_REPL[]
 end
 
-function _pkg_prompt()
-    if isdefined(REPL, :Pkg_promptf)
-        return REPL.Pkg_promptf()
-    end
-    # Older Julia versions keep the pkg prompt generator in Pkg's REPLMode,
-    # which is only reachable when Pkg has already been loaded.
-    pkg_id = Base.PkgId(Base.UUID("44cfe95a-1eb2-52ea-b672-e2afdf69b78f"), "Pkg")
-    pkg = get(Base.loaded_modules, pkg_id, nothing)
-    if pkg !== nothing && isdefined(pkg, :REPLMode)
-        return pkg.REPLMode.promptf()
-    end
-    return REPL.PKG_PROMPT
+@static if isdefined(REPL, :Pkg_promptf)
+    _pkg_prompt() = REPL.Pkg_promptf()
+else
+    # Older Julia versions keep the canonical prompt generator in Pkg.
+    # Load it in this process too: setup_pty's `using Pkg` only affects the
+    # child, and a bare REPL.PKG_PROMPT would lose the active project name.
+    import Pkg
+    _pkg_prompt() = Pkg.REPLMode.promptf()
 end
 
 function _pkg_prompt_prefix(repl::REPL.LineEditREPL)

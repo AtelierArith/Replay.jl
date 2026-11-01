@@ -45,3 +45,9 @@ end
         use_ghostwriter=true,
     )
 end
+
+@testset "Pkg prompts in a fresh process" begin
+    project = dirname(Base.active_project())
+    script = joinpath(@__DIR__, "pkg_prompt.jl")
+    @test success(`$(Base.julia_cmd()) --startup-file=no --project=$project $script`)
+end
