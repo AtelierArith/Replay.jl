@@ -90,6 +90,77 @@ end
     @test occursin(r"(?m)^x = 2\r?$", plain)
 end
 
+@testset "script splitting follows the REPL's completeness rule" begin
+    split_instructions = Replay._split_instructions
+    @test split_instructions("x = 1\ny = 2\n") == ["x = 1", "y = 2"]
+    @test split_instructions("function double(x)\n    2x\nend\ndouble(3)\n") ==
+          ["function double(x)\n    2x\nend", "double(3)"]
+    # Comments stay attached to the statement that follows them.
+    @test split_instructions("# setup\nx = 1\n") == ["# setup\nx = 1"]
+    # A complete block comment is not an incomplete input, and a following mode
+    # command is still recognized.
+    @test split_instructions("#= setup\ncomment =#\nx = 1\n") ==
+          ["#= setup\ncomment =#\nx = 1"]
+    @test split_instructions("#= setup\ncomment =#\n;echo shell-ok\n") ==
+          ["#= setup\ncomment =#", ";echo shell-ok"]
+    # Trailing comments are kept as a final no-op input.
+    @test split_instructions("x = 1\n# trailing\n") == ["x = 1", "# trailing"]
+    @test split_instructions("# only a comment\n") == ["# only a comment"]
+    # A mode prefix at column 0 becomes its own input.
+    @test split_instructions(";echo shell-ok\n1 + 1\n") == [";echo shell-ok", "1 + 1"]
+    # Shell and pkg modes persist, so their commands are not parsed as Julia.
+    @test split_instructions(";echo first\necho #= shell comment\n") ==
+          [";echo first", "echo #= shell comment"]
+    @test split_instructions(";echo first\nfunction f()\n") ==
+          [";echo first", "function f()"]
+    @test split_instructions("]status\nst\n\x03\nx = 1\n") ==
+          ["]status", "st", "\x03", "x = 1"]
+    # Keystroke cells keep their carriage returns and are not buffered into the
+    # next Julia statement.
+    @test split_instructions("\e[B\r\n") == ["\e[B\r"]
+    @test split_instructions("x = 1\n\e[B\r\n") == ["x = 1", "\e[B\r"]
+    @test split_instructions("\r\n") == ["\r"]
+    # A trailing tab used for completion is meaningful, while a trailing
+    # whitespace-only line is not.
+    @test split_instructions("\\alpha\t\n") == ["\\alpha\t"]
+    @test split_instructions("x = 1\n   \n") == ["x = 1"]
+    # Blank input produces no cells.
+    @test isempty(split_instructions("  \n\n"))
+    # Incomplete input is rejected instead of leaving the child REPL waiting.
+    @test_throws ArgumentError split_instructions("function f()\n    1\n")
+    @test_throws ArgumentError replay(["function f()"], IOBuffer())
+end
+
+@testset "single string script with multiline definition" begin
+    src = """
+    function double(x)
+        2x
+    end
+    double(3)
+    """
+    plain = plain_output(capture_replay(src))
+    @test occursin(r"double \(generic function with 1 method\)", plain)
+    @test occursin(r"(?m)^6\r?$", plain)
+end
+
+@testset "single string script with REPL modes" begin
+    plain = plain_output(capture_replay(";echo shell-ok\n\x03\n1 + 1\n"))
+    @test occursin("shell> ", plain)
+    @test occursin(r"(?m)^2\r?$", plain)
+end
+
+@testset "single string script with interactive menu" begin
+    src = """
+    using REPL.TerminalMenus
+    menu = RadioMenu([\"apple\", \"orange\"]);
+    choice = request(\"Choose fruit:\", menu)
+    $(DOWN_ARROW)\r
+    @show choice
+    """
+    plain = plain_output(capture_replay(src))
+    @test occursin(r"(?m)^choice = 2\r?$", plain)
+end
+
 @testset "multiline cell without trailing newline" begin
     # `@deparse` returns `string(expr)` without a trailing newline. Replay must
     # still submit the multiline cell to the REPL.

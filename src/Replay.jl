@@ -84,12 +84,29 @@ end
 # Decide the mode a cell is displayed in. Returns a tuple of the mode, the
 # script to type with the ghostwriter and the mode name that stays active
 # for the next cell, or `nothing` when the previous mode simply continues.
+# Return the mode that stays active after `cell`. Help mode is one-shot, so a
+# leading `?` returns to Julia mode; Ctrl-C leaves a persistent shell/pkg mode.
+# Shared by `_next_mode`, the splitter and the pre-flight check so they cannot
+# drift apart.
+function _advance_mode(cell::AbstractString, mode::Symbol)
+    if mode === :julian
+        c = isempty(cell) ? nothing : first(cell)
+        c === ';' && return :shell
+        c === ']' && return :repl
+        return :julian
+    elseif endswith(cell, CTRL_C)
+        return :julian
+    end
+    return mode
+end
+
 function _next_mode(cell::AbstractString, current_mode_name::Symbol)
+    next_mode_name = _advance_mode(cell, current_mode_name)
     if current_mode_name === :julian
-        if startswith(cell, ';')
+        if next_mode_name === :shell
             # shell mode
             return ghost_mode(:shell), cell[begin+1:end], :shell
-        elseif startswith(cell, ']')
+        elseif next_mode_name === :repl
             # pkg mode
             return ghost_mode(:repl), cell[begin+1:end], :repl
         elseif startswith(cell, '?')
@@ -97,9 +114,186 @@ function _next_mode(cell::AbstractString, current_mode_name::Symbol)
             return ghost_mode(:help), cell[begin+1:end], :julian
         end
         return ghost_mode(:julian), cell, :julian
-    elseif endswith(cell, CTRL_C)
+    elseif next_mode_name !== current_mode_name
         # back to julian mode
         return ghost_mode(:julian), cell, :julian
+    end
+    return nothing
+end
+
+# ---------------------------------------------------------------------------
+# Splitting a script into REPL inputs
+#
+# The REPL does not split input on newlines. It accumulates lines and submits
+# them once the parser stops reporting an incomplete expression: `REPL.jl`
+# keeps reading while `Base.parse_input_line` returns an `Expr(:incomplete)`
+# (`start_repl_backend`, and the prompt-paste path calls
+# `Meta.parse(input, pos; raise=false)` for the same check). We follow that rule
+# so a multi-line `function ... end` is replayed as one input.
+#
+# Cells are cut out of the original source instead of being re-printed from the
+# parsed expression, which keeps comments, layout and trailing semicolons.
+# ---------------------------------------------------------------------------
+
+const _MODE_CHARS = (';', ']', '?', '\x03')
+
+# A REPL mode command or a Ctrl-C, not Julia source. The REPL switches modes
+# when one of these characters is typed at the start of an empty prompt (see
+# the `';'`, `'?'` and `']'` keybindings in `REPL.jl`).
+_is_mode_command(cell::AbstractString) = !isempty(cell) && first(cell) in _MODE_CHARS
+
+# Remove the line separators and indentation that Replay adds back or does not
+# need, while keeping meaningful terminal input. `strip` would delete a `\r`
+# used to confirm a TerminalMenus selection and a trailing `\t` used for tab
+# completion.
+function _trim_input(s::AbstractString)
+    start = firstindex(s)
+    stop = lastindex(s)
+    while start <= stop && (s[start] == '\n' || s[start] == ' ' || s[start] == '\t')
+        start = nextind(s, start)
+    end
+    while start <= stop
+        if s[stop] == '\n'
+            stop = prevind(s, stop)
+            continue
+        end
+        # Drop a trailing whitespace-only line, but keep spaces and tabs that
+        # follow the last non-whitespace character on its line.
+        j = stop
+        while j >= start && (s[j] == ' ' || s[j] == '\t')
+            j = prevind(s, j)
+        end
+        if j < start
+            stop = start - 1
+            break
+        elseif s[j] == '\n'
+            stop = j
+            continue
+        end
+        break
+    end
+    return start <= stop ? String(SubString(s, start, stop)) : ""
+end
+
+# Arrow keys and menu confirmations arrive as raw terminal input rather than
+# Julia source, so submit them as their own input.
+function _is_keystroke(line::AbstractString)
+    i = firstindex(line)
+    stop = lastindex(line)
+    while i <= stop && (line[i] == ' ' || line[i] == '\t')
+        i = nextind(line, i)
+    end
+    i > stop && return false
+    return line[i] == '\e' || line[i] == '\r'
+end
+
+# `Meta.parseall` represents a buffer holding only whitespace and comments as a
+# `:toplevel` with just `LineNumberNode`s (or as `nothing`).
+function _is_trivia(ast)
+    ast === nothing ||
+        (
+            ast isa Expr && ast.head === :toplevel &&
+            all(arg -> arg isa LineNumberNode, ast.args)
+        )
+end
+
+function _incomplete_error(ast)
+    err = ast isa Expr && !isempty(ast.args) ? ast.args[1] : ast
+    return sprint(showerror, err)
+end
+
+function _split_instructions(src::AbstractString)
+    cells = String[]
+    buffer = ""
+    incomplete = false
+    mode = :julian
+    for line in eachline(IOBuffer(String(src)); keep=true)
+        if mode !== :julian
+            # Shell and pkg modes submit one line at a time and stay active
+            # until Ctrl-C returns to Julia mode, so do not feed their commands
+            # to the Julia parser.
+            cell = _trim_input(line)
+            if !isempty(cell)
+                push!(cells, cell)
+                mode = _advance_mode(cell, mode)
+            end
+            continue
+        end
+        # A `;`, `]` or `?` at column 0 only switches REPL mode while the prompt
+        # buffer is empty. Until a statement starts, `buffer` holds at most
+        # blank lines and comments; replay those comments as their own no-op
+        # input and keep the mode command separate. Raw keystrokes are never
+        # Julia source and are submitted as their own input too.
+        if !incomplete && (_is_mode_command(line) || _is_keystroke(line))
+            comments = _trim_input(buffer)
+            isempty(comments) || push!(cells, comments)
+            cell = _trim_input(line)
+            push!(cells, cell)
+            mode = _advance_mode(cell, :julian)
+            buffer = ""
+            continue
+        end
+        buffer *= line
+        ast = Base.parse_input_line(buffer; depwarn=false)
+        if _is_trivia(ast)
+            # No statement yet: keep accumulating so a leading comment stays
+            # attached to the input that follows it. This also clears a pending
+            # `:incomplete` from an unterminated block comment that just closed.
+            incomplete = false
+            continue
+        elseif ast isa Expr && ast.head === :incomplete
+            incomplete = true
+            continue
+        end
+        cell = _trim_input(buffer)
+        if !isempty(cell)
+            push!(cells, cell)
+            mode = _advance_mode(cell, mode)
+        end
+        buffer = ""
+        incomplete = false
+    end
+    tail = _trim_input(buffer)
+    if incomplete
+        ast = Base.parse_input_line(buffer; depwarn=false)
+        throw(
+            ArgumentError(
+                "the script ends with an incomplete input; add the missing `end`, " *
+                "bracket or quote:\n" * _incomplete_error(ast),
+            ),
+        )
+    elseif !isempty(tail)
+        # A trailing comment is still part of the transcript, so replay it as a
+        # no-op input instead of dropping it.
+        push!(cells, tail)
+    end
+    return cells
+end
+
+function _check_complete(cell::AbstractString, index::Integer)
+    ast = Base.parse_input_line(String(cell); depwarn=false)
+    if ast isa Expr && ast.head === :incomplete
+        throw(
+            ArgumentError(
+                "instruction $index is incomplete; the REPL would keep waiting for " *
+                "more input. Join the remaining lines into the same instruction:\n" *
+                _incomplete_error(ast),
+            ),
+        )
+    end
+    return nothing
+end
+
+# Reject incomplete instructions before the child REPL is started, so a typo
+# does not leave the session waiting for the rest of an expression. Track modes
+# because shell and pkg commands are not Julia source.
+function _check_instructions(instructions)
+    mode = :julian
+    for (index, cell) in enumerate(instructions)
+        if mode === :julian && !_is_mode_command(cell) && !endswith(cell, CTRL_C)
+            _check_complete(cell, index)
+        end
+        mode = _advance_mode(cell, mode)
     end
     return nothing
 end
@@ -293,6 +487,12 @@ end
 
 Replay the REPL output from given instructions.
 
+Each element of `instructions` is one complete input submitted to the REPL.
+Multi-line inputs such as a `function ... end` definition must stay in a single
+element. An instruction that the parser reports as incomplete raises an
+`ArgumentError` before the child REPL is started. To replay a whole script,
+pass it as a single string; see the `replay(script::AbstractString)` method.
+
 ## Keyword Arguments
 
 ### Replay options
@@ -352,6 +552,7 @@ function replay(
     if use_ghostwriter && (startup_prompt != "julia>" || prompt_delimiter != "> ")
         throw(ArgumentError("custom prompts require use_ghostwriter=false"))
     end
+    _check_instructions(instructions)
     print("\x1b[?25l") # hide cursor
     replproc, ptm = setup_pty(julia_project, cmd)
     output_copy, tee = _start_output_tee(ptm, buf)
@@ -396,8 +597,22 @@ function replay(
     return buf
 end
 
+"""
+    replay(script::AbstractString, buf::IO=stdout; kwargs...)
+
+Split `script` into REPL inputs and replay them.
+
+Splitting uses the REPL's own completeness rule: lines are accumulated until
+`Base.parse_input_line` no longer returns an `Expr(:incomplete)`, so a
+multi-line definition is submitted as one input. Lines that start with `;`,
+`]` or `?` at column 0 are treated as shell, pkg and help mode commands, and a
+line starting with a Ctrl-C character interrupts the current mode.
+
+The script must be complete. If it ends in the middle of an expression, an
+`ArgumentError` is raised instead of leaving the child REPL waiting for input.
+"""
 function replay(repl_script::AbstractString, args...; kwargs...)
-    replay(split(String(repl_script), '\n'; keepempty=false), args...; kwargs...)
+    replay(_split_instructions(repl_script), args...; kwargs...)
 end
 
 end # module
