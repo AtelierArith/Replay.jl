@@ -32,6 +32,60 @@ text = String(take!(output))
 
 See the [API reference](@ref API) for options, control keys and `@deparse`.
 
+## Turning a script into instructions
+
+`replay` accepts a vector of strings, where each string is one cell submitted to the
+REPL. If you already have a script, you can derive the cells from it by splitting the
+source into top-level expressions with `Meta.parse`. Cutting the original source text
+(rather than re-printing the parsed expression) keeps comments, formatting and trailing
+semicolons intact.
+
+```julia
+function instructions(src::AbstractString)
+    cells = String[]
+    pos = firstindex(src)
+    stop = lastindex(src)
+    while pos <= stop
+        expr, nextpos = Meta.parse(src, pos; raise=true)
+        if expr !== nothing
+            push!(cells, strip(src[pos:prevind(src, nextpos)]))
+        end
+        pos = nextpos
+    end
+    return cells
+end
+
+src = """
+msg = "Hello World"
+function greet(msg::String="Hello!")
+    println(msg)
+end
+greet()
+greet(; msg)
+"""
+
+replay(instructions(src); cmd=`-q --color=no`)
+```
+
+`instructions(src)` returns four cells; the multi-line function definition stays a
+single cell. Note that `replay(script::AbstractString)` splits its argument on newlines,
+so passing the raw script directly would break the function definition into separate
+inputs. Always pass a vector of complete cells.
+
+`CodeEvaluation.parseblock` from
+[CodeEvaluation.jl](https://github.com/JuliaDocs/CodeEvaluation.jl) implements the same
+split and returns each expression together with its source text:
+
+```julia
+import CodeEvaluation
+
+cells = [String(pe.code) for pe in CodeEvaluation.parseblock(src)]
+```
+
+It is not exported and may change, so the small helper above is preferable if you do not
+already depend on that package. Do not use `@deparse` or `string(expr)` to build cells:
+they discard comments, the original layout and trailing semicolons.
+
 ## Recording
 
 Replay produces terminal output, not an MP4 file. An external terminal recorder
