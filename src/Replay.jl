@@ -142,6 +142,33 @@ const _MODE_CHARS = (';', ']', '?', '\x03')
 # the `';'`, `'?'` and `']'` keybindings in `REPL.jl`).
 _is_mode_command(cell::AbstractString) = !isempty(cell) && first(cell) in _MODE_CHARS
 
+# Remove the line separators and indentation that Replay adds back or does not
+# need, while keeping meaningful control characters. `strip` would delete a
+# `\r` used to confirm a TerminalMenus selection.
+function _trim_input(s::AbstractString)
+    start = firstindex(s)
+    stop = lastindex(s)
+    while start <= stop && (s[start] == '\n' || s[start] == ' ' || s[start] == '\t')
+        start = nextind(s, start)
+    end
+    while start <= stop && (s[stop] == '\n' || s[stop] == ' ' || s[stop] == '\t')
+        stop = prevind(s, stop)
+    end
+    return start <= stop ? String(SubString(s, start, stop)) : ""
+end
+
+# Arrow keys and menu confirmations arrive as raw terminal input rather than
+# Julia source, so submit them as their own input.
+function _is_keystroke(line::AbstractString)
+    i = firstindex(line)
+    stop = lastindex(line)
+    while i <= stop && (line[i] == ' ' || line[i] == '\t')
+        i = nextind(line, i)
+    end
+    i > stop && return false
+    return line[i] == '\e' || line[i] == '\r'
+end
+
 # `Meta.parseall` represents a buffer holding only whitespace and comments as a
 # `:toplevel` with just `LineNumberNode`s (or as `nothing`).
 function _is_trivia(ast)
@@ -167,7 +194,7 @@ function _split_instructions(src::AbstractString)
             # Shell and pkg modes submit one line at a time and stay active
             # until Ctrl-C returns to Julia mode, so do not feed their commands
             # to the Julia parser.
-            cell = strip(line)
+            cell = _trim_input(line)
             if !isempty(cell)
                 push!(cells, cell)
                 mode = _advance_mode(cell, mode)
@@ -177,11 +204,12 @@ function _split_instructions(src::AbstractString)
         # A `;`, `]` or `?` at column 0 only switches REPL mode while the prompt
         # buffer is empty. Until a statement starts, `buffer` holds at most
         # blank lines and comments; replay those comments as their own no-op
-        # input and keep the mode command separate.
-        if !incomplete && _is_mode_command(line)
-            comments = strip(buffer)
+        # input and keep the mode command separate. Raw keystrokes are never
+        # Julia source and are submitted as their own input too.
+        if !incomplete && (_is_mode_command(line) || _is_keystroke(line))
+            comments = _trim_input(buffer)
             isempty(comments) || push!(cells, comments)
-            cell = strip(line)
+            cell = _trim_input(line)
             push!(cells, cell)
             mode = _advance_mode(cell, :julian)
             buffer = ""
@@ -199,7 +227,7 @@ function _split_instructions(src::AbstractString)
             incomplete = true
             continue
         end
-        cell = strip(buffer)
+        cell = _trim_input(buffer)
         if !isempty(cell)
             push!(cells, cell)
             mode = _advance_mode(cell, mode)
@@ -207,7 +235,7 @@ function _split_instructions(src::AbstractString)
         buffer = ""
         incomplete = false
     end
-    tail = strip(buffer)
+    tail = _trim_input(buffer)
     if incomplete
         ast = Base.parse_input_line(buffer; depwarn=false)
         throw(

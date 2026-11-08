@@ -115,6 +115,11 @@ end
           [";echo first", "function f()"]
     @test split_instructions("]status\nst\n\x03\nx = 1\n") ==
           ["]status", "st", "\x03", "x = 1"]
+    # Keystroke cells keep their carriage returns and are not buffered into the
+    # next Julia statement.
+    @test split_instructions("\e[B\r\n") == ["\e[B\r"]
+    @test split_instructions("x = 1\n\e[B\r\n") == ["x = 1", "\e[B\r"]
+    @test split_instructions("\r\n") == ["\r"]
     # Blank input produces no cells.
     @test isempty(split_instructions("  \n\n"))
     # Incomplete input is rejected instead of leaving the child REPL waiting.
@@ -138,6 +143,18 @@ end
     plain = plain_output(capture_replay(";echo shell-ok\n\x03\n1 + 1\n"))
     @test occursin("shell> ", plain)
     @test occursin(r"(?m)^2\r?$", plain)
+end
+
+@testset "single string script with interactive menu" begin
+    src = """
+    using REPL.TerminalMenus
+    menu = RadioMenu([\"apple\", \"orange\"]);
+    choice = request(\"Choose fruit:\", menu)
+    $(DOWN_ARROW)\r
+    @show choice
+    """
+    plain = plain_output(capture_replay(src))
+    @test occursin(r"(?m)^choice = 2\r?$", plain)
 end
 
 @testset "multiline cell without trailing newline" begin
