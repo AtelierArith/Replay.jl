@@ -8,9 +8,9 @@
 
 Replay your REPL instructions something like this:
 
-[![asciicast](https://asciinema.org/a/V3w9CQXAesZUgAeTIUXytkpws.svg)](https://asciinema.org/a/V3w9CQXAesZUgAeTIUXytkpws)
+[![Watch the Replay demo on asciinema](docs/src/assets/demo.png)](https://asciinema.org/a/V3w9CQXAesZUgAeTIUXytkpws)
 
 See the [minimal example and API manual](https://atelierarith.github.io/Replay.jl/dev/)
-and the full [ReplayGallery.jl examples](https://github.com/AtelierArith/ReplayGallery.jl).
+and the full [ReplayGallery.jl examples](https://atelierarith.github.io/ReplayGallery.jl/dev/examples/readme).
 
 Tested Julia versions: latest stable (`1`) and current LTS (`lts`).
