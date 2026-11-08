@@ -108,6 +108,13 @@ end
     @test split_instructions("# only a comment\n") == ["# only a comment"]
     # A mode prefix at column 0 becomes its own input.
     @test split_instructions(";echo shell-ok\n1 + 1\n") == [";echo shell-ok", "1 + 1"]
+    # Shell and pkg modes persist, so their commands are not parsed as Julia.
+    @test split_instructions(";echo first\necho #= shell comment\n") ==
+          [";echo first", "echo #= shell comment"]
+    @test split_instructions(";echo first\nfunction f()\n") ==
+          [";echo first", "function f()"]
+    @test split_instructions("]status\nst\n\x03\nx = 1\n") ==
+          ["]status", "st", "\x03", "x = 1"]
     # Blank input produces no cells.
     @test isempty(split_instructions("  \n\n"))
     # Incomplete input is rejected instead of leaving the child REPL waiting.

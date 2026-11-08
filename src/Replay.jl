@@ -84,12 +84,29 @@ end
 # Decide the mode a cell is displayed in. Returns a tuple of the mode, the
 # script to type with the ghostwriter and the mode name that stays active
 # for the next cell, or `nothing` when the previous mode simply continues.
+# Return the mode that stays active after `cell`. Help mode is one-shot, so a
+# leading `?` returns to Julia mode; Ctrl-C leaves a persistent shell/pkg mode.
+# Shared by `_next_mode`, the splitter and the pre-flight check so they cannot
+# drift apart.
+function _advance_mode(cell::AbstractString, mode::Symbol)
+    if mode === :julian
+        c = isempty(cell) ? nothing : first(cell)
+        c === ';' && return :shell
+        c === ']' && return :repl
+        return :julian
+    elseif endswith(cell, CTRL_C)
+        return :julian
+    end
+    return mode
+end
+
 function _next_mode(cell::AbstractString, current_mode_name::Symbol)
+    next_mode_name = _advance_mode(cell, current_mode_name)
     if current_mode_name === :julian
-        if startswith(cell, ';')
+        if next_mode_name === :shell
             # shell mode
             return ghost_mode(:shell), cell[begin+1:end], :shell
-        elseif startswith(cell, ']')
+        elseif next_mode_name === :repl
             # pkg mode
             return ghost_mode(:repl), cell[begin+1:end], :repl
         elseif startswith(cell, '?')
@@ -97,7 +114,7 @@ function _next_mode(cell::AbstractString, current_mode_name::Symbol)
             return ghost_mode(:help), cell[begin+1:end], :julian
         end
         return ghost_mode(:julian), cell, :julian
-    elseif endswith(cell, CTRL_C)
+    elseif next_mode_name !== current_mode_name
         # back to julian mode
         return ghost_mode(:julian), cell, :julian
     end
@@ -144,7 +161,19 @@ function _split_instructions(src::AbstractString)
     cells = String[]
     buffer = ""
     incomplete = false
+    mode = :julian
     for line in eachline(IOBuffer(String(src)); keep=true)
+        if mode !== :julian
+            # Shell and pkg modes submit one line at a time and stay active
+            # until Ctrl-C returns to Julia mode, so do not feed their commands
+            # to the Julia parser.
+            cell = strip(line)
+            if !isempty(cell)
+                push!(cells, cell)
+                mode = _advance_mode(cell, mode)
+            end
+            continue
+        end
         # A `;`, `]` or `?` at column 0 only switches REPL mode while the prompt
         # buffer is empty. Until a statement starts, `buffer` holds at most
         # blank lines and comments; replay those comments as their own no-op
@@ -152,7 +181,9 @@ function _split_instructions(src::AbstractString)
         if !incomplete && _is_mode_command(line)
             comments = strip(buffer)
             isempty(comments) || push!(cells, comments)
-            push!(cells, strip(line))
+            cell = strip(line)
+            push!(cells, cell)
+            mode = _advance_mode(cell, :julian)
             buffer = ""
             continue
         end
@@ -169,7 +200,10 @@ function _split_instructions(src::AbstractString)
             continue
         end
         cell = strip(buffer)
-        isempty(cell) || push!(cells, cell)
+        if !isempty(cell)
+            push!(cells, cell)
+            mode = _advance_mode(cell, mode)
+        end
         buffer = ""
         incomplete = false
     end
@@ -213,8 +247,7 @@ function _check_instructions(instructions)
         if mode === :julian && !_is_mode_command(cell) && !endswith(cell, CTRL_C)
             _check_complete(cell, index)
         end
-        transition = _next_mode(cell, mode)
-        transition === nothing || (mode = transition[3])
+        mode = _advance_mode(cell, mode)
     end
     return nothing
 end
