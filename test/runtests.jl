@@ -90,6 +90,18 @@ end
     @test occursin(r"(?m)^x = 2\r?$", plain)
 end
 
+@testset "multiline cell without trailing newline" begin
+    # `@deparse` returns `string(expr)` without a trailing newline. Replay must
+    # still submit the multiline cell to the REPL.
+    instruction = @deparse function double(x)
+        2x
+    end
+    @test !endswith(instruction, "\n")
+    plain = plain_output(capture_replay([instruction, "double(3)"]))
+    @test occursin(r"double \(generic function with 1 method\)", plain)
+    @test occursin(r"(?m)^6\r?$", plain)
+end
+
 @testset "color output" begin
     instructions = ["1 + 1"]
     colored = capture_replay(instructions; color="yes")

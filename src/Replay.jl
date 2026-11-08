@@ -272,11 +272,12 @@ end
 function _send_cell(ptm::IO, cell::AbstractString)
     if endswith(cell, CTRL_C)
         write(ptm, cell)
-    elseif length(split(string(cell), '\n'; keepempty=false)) == 1
-        write(ptm, cell, "\n")
-    else
-        write(ptm, cell)
+        return
     end
+    write(ptm, cell)
+    # Multiline cells do not necessarily end with a newline (e.g. the output of
+    # `@deparse`), but the REPL needs one to submit the input.
+    endswith(cell, "\n") || write(ptm, "\n")
 end
 
 function _wait_for_next_prompt(output_copy::IO, prompt_delimiter::AbstractString)
