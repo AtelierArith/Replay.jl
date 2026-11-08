@@ -35,9 +35,13 @@ See the [API reference](@ref API) for options, control keys and `@deparse`.
 ## Turning a script into instructions
 
 `replay` accepts a vector of strings, where each string is one cell submitted to the
-REPL. If you already have a script, you can derive the cells from it by splitting the
-source into top-level expressions with `Meta.parse`. Cutting the original source text
-(rather than re-printing the parsed expression) keeps comments, formatting and trailing
+REPL. Passing a script as a single string works too: `replay(script)` splits it with
+the REPL's own completeness rule, so multi-line definitions stay in one cell, and an
+incomplete script raises an `ArgumentError` before the child REPL starts.
+
+If you need the cells explicitly (to inspect or edit them before replaying), you can
+derive them from the source with `Meta.parse`. Cutting the original source text rather
+than re-printing the parsed expression keeps comments, formatting and trailing
 semicolons intact.
 
 ```julia
@@ -68,9 +72,7 @@ replay(instructions(src); cmd=`-q --color=no`)
 ```
 
 `instructions(src)` returns four cells; the multi-line function definition stays a
-single cell. Note that `replay(script::AbstractString)` splits its argument on newlines,
-so passing the raw script directly would break the function definition into separate
-inputs. Always pass a vector of complete cells.
+single cell.
 
 `CodeEvaluation.parseblock` from
 [CodeEvaluation.jl](https://github.com/JuliaDocs/CodeEvaluation.jl) implements the same
