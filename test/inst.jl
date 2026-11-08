@@ -22,21 +22,22 @@ end
     @test tar == ref
 end
 
-# We don't support the expression yet.
+# `@deparse` returns Julia's canonical `string(expr)`, not the exact source the
+# user typed. Short-form definitions therefore contain an explicit block.
 @testset "f(x) = x" begin
-    ref = "f(x) = x"
+    ref = "f(x) = begin\n        x\n    end"
     tar = @deparse f(x) = x
-    @test_broken tar == ref
+    @test tar == ref
+end
+
+@testset "anonymous function" begin
+    ref = "x->begin\n        x ^ 2\n    end"
+    tar = @deparse x -> x^2
+    @test tar == ref
 end
 
 @testset "function definition" begin
-    ref = """
-    function f(x)
-        y = 2x + 1
-        z = y ^ 3
-        return y
-    end
-    """
+    ref = "function f(x)\n    y = 2x + 1\n    z = y ^ 3\n    return y\nend"
     tar = @deparse function f(x)
         y = 2x + 1
         z = y^3
@@ -45,16 +46,8 @@ end
     @test ref == tar
 end
 
-@testset "function definition with comments" begin
-    ref = """
-    function f(x)
-        # linear transformation
-        y = 2x
-        # square root of y
-        z = √y
-        return y
-    end
-    """
+@testset "@comment is left as a macro call" begin
+    ref = "function f(x)\n    @comment linear transformation\n    y = 2x\n    @comment square root of y\n    z = √y\n    return y\nend"
     tar = @deparse function f(x)
         @comment linear transformation
         y = 2x
@@ -62,21 +55,11 @@ end
         z = √y
         return y
     end
-    @test ref == tar
+    @test tar == ref
 end
 
-@testset "@comment" begin
-    ref = """
-    function f(x)
-        # This is a comment
-        if x > 0
-            # x is larger than 0
-            @info "x is larger than 0"
-        end
-        @info "compute 2x + 2"
-        2x + 2
-    end
-    """
+@testset "nested @comment and macros" begin
+    ref = "function f(x)\n    @comment This is a comment\n    if x > 0\n        @comment x is larger than 0\n        @info \"x is larger than 0\"\n    end\n    @info \"compute 2x + 2\"\n    2x + 2\nend"
     tar = @deparse function f(x)
         @comment This is a comment
         if x > 0
@@ -87,4 +70,24 @@ end
         2x + 2
     end
     @test tar == ref
+end
+
+# Regression test: an `@` inside a string literal used to make the old
+# line-based rewriting throw a `BoundsError` at macro expansion time.
+@testset "@ inside a string literal" begin
+    ref = "function f(x)\n    s = \"email@example.com\"\n    return length(s)\nend"
+    tar = @deparse function f(x)
+        s = "email@example.com"
+        return length(s)
+    end
+    @test tar == ref
+end
+
+@testset "no line number markers" begin
+    tar = @deparse function f(x)
+        @show x
+        return x
+    end
+    @test !occursin("#=", tar)
+    @test occursin("@show x", tar)
 end
