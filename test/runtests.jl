@@ -120,6 +120,10 @@ end
     @test split_instructions("\e[B\r\n") == ["\e[B\r"]
     @test split_instructions("x = 1\n\e[B\r\n") == ["x = 1", "\e[B\r"]
     @test split_instructions("\r\n") == ["\r"]
+    # A trailing tab used for completion is meaningful, while a trailing
+    # whitespace-only line is not.
+    @test split_instructions("\\alpha\t\n") == ["\\alpha\t"]
+    @test split_instructions("x = 1\n   \n") == ["x = 1"]
     # Blank input produces no cells.
     @test isempty(split_instructions("  \n\n"))
     # Incomplete input is rejected instead of leaving the child REPL waiting.

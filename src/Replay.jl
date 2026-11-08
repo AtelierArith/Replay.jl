@@ -143,16 +143,34 @@ const _MODE_CHARS = (';', ']', '?', '\x03')
 _is_mode_command(cell::AbstractString) = !isempty(cell) && first(cell) in _MODE_CHARS
 
 # Remove the line separators and indentation that Replay adds back or does not
-# need, while keeping meaningful control characters. `strip` would delete a
-# `\r` used to confirm a TerminalMenus selection.
+# need, while keeping meaningful terminal input. `strip` would delete a `\r`
+# used to confirm a TerminalMenus selection and a trailing `\t` used for tab
+# completion.
 function _trim_input(s::AbstractString)
     start = firstindex(s)
     stop = lastindex(s)
     while start <= stop && (s[start] == '\n' || s[start] == ' ' || s[start] == '\t')
         start = nextind(s, start)
     end
-    while start <= stop && (s[stop] == '\n' || s[stop] == ' ' || s[stop] == '\t')
-        stop = prevind(s, stop)
+    while start <= stop
+        if s[stop] == '\n'
+            stop = prevind(s, stop)
+            continue
+        end
+        # Drop a trailing whitespace-only line, but keep spaces and tabs that
+        # follow the last non-whitespace character on its line.
+        j = stop
+        while j >= start && (s[j] == ' ' || s[j] == '\t')
+            j = prevind(s, j)
+        end
+        if j < start
+            stop = start - 1
+            break
+        elseif s[j] == '\n'
+            stop = j
+            continue
+        end
+        break
     end
     return start <= stop ? String(SubString(s, start, stop)) : ""
 end
