@@ -1,99 +1,113 @@
 using Replay
 using Test
 
-const repl_script = """
-x = 1 + 1
-println("Hello World")
-@show x
-"""
+# Terminal escape sequences vary between Julia versions and platforms, so the
+# tests assert on the plain text the REPL produces once cursor movement and
+# color codes are removed. This keeps them version-independent without
+# storing per-version reference transcripts.
+const ANSI_ESCAPE = r"\e\[[0-?]*[ -/]*[@-~]"
+const SGR_ESCAPE = r"\e\[[0-9;]*m"
 
-# Set false for daily use.
-const UPDATE_REFERENCE = false
+plain_output(output::AbstractString) = replace(output, ANSI_ESCAPE => "")
 
-# Inspired by 
-# https://github.com/JuliaPlots/Plots.jl/blob/master/test/runtests.jl#L38
-is_ci() = parse(Bool, get(ENV, "CI", "false"))
+function capture_replay(
+    instructions;
+    color::AbstractString="no",
+    kwargs...,
+)
+    buf = IOBuffer()
+    replay(
+        instructions,
+        buf;
+        cmd=`-q --color=$color`,
+        julia_project=dirname(Base.active_project()),
+        kwargs...,
+    )
+    return String(take!(buf))
+end
 
-if is_ci()
-    @testset "check UPDATE_REFERENCE is false in CI" begin
-        @test UPDATE_REFERENCE == false
+# Each scenario runs in a fresh child REPL and checks observable behaviour
+# instead of a complete transcript.
+const REPLAY_SCENARIOS = [
+    (
+        name="julian mode: results, macros and stdout",
+        instructions=["x = 1 + 1", "@show x", "println(\"stdout-ok\")"],
+        expected=[r"(?m)^2\r?$", r"(?m)^x = 2\r?$", r"(?m)^stdout-ok\r?$"],
+        kwargs=(;),
+    ),
+    (
+        name="julian mode: multiline definition",
+        instructions=["function double(x)\n    2x\nend\n", "double(3)"],
+        expected=[r"double \(generic function with 1 method\)", r"(?m)^6\r?$"],
+        kwargs=(;),
+    ),
+    (
+        name="julian mode: errors do not stop the session",
+        instructions=["sqrt(-1)", "1 + 1"],
+        expected=["DomainError", r"(?m)^2\r?$"],
+        kwargs=(;),
+    ),
+    (
+        name="help mode returns to julian mode",
+        instructions=["?println", "1 + 1"],
+        expected=["help?> ", "println", r"(?m)^2\r?$"],
+        kwargs=(;),
+    ),
+    (
+        name="shell mode",
+        instructions=[";echo shell-ok"],
+        expected=["shell> ", r"(?m)^shell-ok\r?$"],
+        kwargs=(;),
+    ),
+    (
+        name="pkg mode",
+        instructions=["]status"],
+        expected=[r"pkg> ", "Status `"],
+        kwargs=(;),
+    ),
+    (
+        name="ghostwriter types the instructions",
+        instructions=["1 + 1"],
+        expected=[r"(?m)^2\r?$"],
+        kwargs=(; use_ghostwriter=true),
+    ),
+]
+
+@testset "replay scenarios" begin
+    for scenario in REPLAY_SCENARIOS
+        @testset "$(scenario.name)" begin
+            output = capture_replay(scenario.instructions; scenario.kwargs...)
+            plain = plain_output(output)
+            for pattern in scenario.expected
+                @test occursin(pattern, plain)
+            end
+        end
     end
 end
 
-version_dir = "v$(VERSION.major).$(VERSION.minor)"
-
-mkpath(joinpath(@__DIR__, "references", version_dir))
-
-@testset "replay: color=yes" begin
-    color = "yes"
-    buf = IOBuffer()
-    try
-        replay(repl_script, buf; cmd=`-q --color=yes`)
-    catch
-        @error "Captured REPL output" output = String(take!(buf))
-        rethrow()
-    end
-    out = buf |> take! |> String
-
-    UPDATE_REFERENCE && open(
-        joinpath(
-            @__DIR__,
-            "references",
-            version_dir,
-            "replay_color_$(color)_julia.txt",
-        ),
-        "w",
-    ) do f
-        write(f, out)
-    end
-
-    reftxt = joinpath(@__DIR__, "references", version_dir, "replay_color_yes_julia.txt")
-    if isfile(reftxt) && !Sys.iswindows()
-        ref = join(readlines(reftxt), "\r\n")
-        @test out == ref
-    else
-        # Terminal escape sequences change across Julia versions and platforms.
-        plain = replace(out, r"\e\[[0-?]*[ -/]*[@-~]" => "")
-        @test occursin(r"(?m)^Hello World\r?$", plain)
-        @test occursin(r"(?m)^x = 2\r?$", plain)
-        @test occursin("julia>", out)
-    end
+@testset "single string script" begin
+    plain = plain_output(capture_replay("x = 1 + 1\n@show x"))
+    @test occursin(r"(?m)^x = 2\r?$", plain)
 end
 
-@testset "replay: color=no" begin
-    color = "no"
-    buf = IOBuffer()
-    try
-        replay(repl_script, buf; cmd=`-q --color=no`)
-    catch
-        @error "Captured REPL output" output = String(take!(buf))
-        rethrow()
-    end
-    out = buf |> take! |> String
+@testset "color output" begin
+    instructions = ["1 + 1"]
+    colored = capture_replay(instructions; color="yes")
+    plain = capture_replay(instructions; color="no")
+    @test occursin(SGR_ESCAPE, colored)
+    @test !occursin(SGR_ESCAPE, plain)
+end
 
-    UPDATE_REFERENCE && open(
-        joinpath(
-            @__DIR__,
-            "references",
-            version_dir,
-            "replay_color_$(color)_julia.txt",
+@testset "Ctrl-C returns from pkg and shell mode" begin
+    plain = plain_output(
+        capture_replay(
+            [";echo shell-ok", CTRL_C, "1 + 1", "]status", CTRL_C, "2 + 2"],
         ),
-        "w",
-    ) do f
-        write(f, out)
-    end
-
-    reftxt = joinpath(@__DIR__, "references", version_dir, "replay_color_no_julia.txt")
-    if isfile(reftxt) && !Sys.iswindows()
-        ref = join(readlines(reftxt), "\r\n")
-        @test out == ref
-    else
-        # Terminal escape sequences change across Julia versions and platforms.
-        plain = replace(out, r"\e\[[0-?]*[ -/]*[@-~]" => "")
-        @test occursin(r"(?m)^Hello World\r?$", plain)
-        @test occursin(r"(?m)^x = 2\r?$", plain)
-        @test occursin("julia>", out)
-    end
+    )
+    @test occursin("shell> ", plain)
+    @test occursin(r"(?m)^2\r?$", plain)
+    @test occursin(r"pkg> ", plain)
+    @test occursin(r"(?m)^4\r?$", plain)
 end
 
 include("inst.jl")
@@ -105,7 +119,7 @@ if Sys.iswindows()
             IOBuffer();
             cmd=`-q --color=no`,
         )
-        plain = replace(String(take!(buf)), r"\e\[[0-?]*[ -/]*[@-~]" => "")
+        plain = plain_output(String(take!(buf)))
         @test occursin(r"(?m)^α = 7\r?$", plain)
     end
 end
