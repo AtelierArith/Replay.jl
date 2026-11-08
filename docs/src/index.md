@@ -32,61 +32,22 @@ text = String(take!(output))
 
 See the [API reference](@ref API) for options, control keys and `@deparse`.
 
-## Turning a script into instructions
+## Replaying a script
 
-`replay` accepts a vector of strings, where each string is one cell submitted to the
-REPL. Passing a script as a single string works too: `replay(script)` splits it with
-the REPL's own completeness rule, so multi-line definitions stay in one cell, and an
+Pass a script as a single string to replay it as a whole:
+
+```julia
+src = read("demo.jl", String)
+replay(src; cmd=`-q --color=no`)
+```
+
+`replay` splits the script the same way the REPL decides that an input is
+complete: it keeps reading lines while `Base.parse_input_line` reports an
+`Expr(:incomplete)`, so a multi-line definition stays one input. A line starting
+with `;`, `]` or `?` at column 0 switches to shell, pkg or help mode, and an
 incomplete script raises an `ArgumentError` before the child REPL starts.
-
-If you need the cells explicitly (to inspect or edit them before replaying), you can
-derive them from the source with `Meta.parse`. Cutting the original source text rather
-than re-printing the parsed expression keeps comments, formatting and trailing
-semicolons intact.
-
-```julia
-function instructions(src::AbstractString)
-    cells = String[]
-    pos = firstindex(src)
-    stop = lastindex(src)
-    while pos <= stop
-        expr, nextpos = Meta.parse(src, pos; raise=true)
-        if expr !== nothing
-            push!(cells, strip(src[pos:prevind(src, nextpos)]))
-        end
-        pos = nextpos
-    end
-    return cells
-end
-
-src = """
-msg = "Hello World"
-function greet(msg::String="Hello!")
-    println(msg)
-end
-greet()
-greet(; msg)
-"""
-
-replay(instructions(src); cmd=`-q --color=no`)
-```
-
-`instructions(src)` returns four cells; the multi-line function definition stays a
-single cell.
-
-`CodeEvaluation.parseblock` from
-[CodeEvaluation.jl](https://github.com/JuliaDocs/CodeEvaluation.jl) implements the same
-split and returns each expression together with its source text:
-
-```julia
-import CodeEvaluation
-
-cells = [String(pe.code) for pe in CodeEvaluation.parseblock(src)]
-```
-
-It is not exported and may change, so the small helper above is preferable if you do not
-already depend on that package. Do not use `@deparse` or `string(expr)` to build cells:
-they discard comments, the original layout and trailing semicolons.
+The vector form is still available when you want to control each submitted input
+explicitly: `replay(["x = 1", "@show x"])`.
 
 ## Recording
 
