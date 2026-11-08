@@ -97,6 +97,15 @@ end
           ["function double(x)\n    2x\nend", "double(3)"]
     # Comments stay attached to the statement that follows them.
     @test split_instructions("# setup\nx = 1\n") == ["# setup\nx = 1"]
+    # A complete block comment is not an incomplete input, and a following mode
+    # command is still recognized.
+    @test split_instructions("#= setup\ncomment =#\nx = 1\n") ==
+          ["#= setup\ncomment =#\nx = 1"]
+    @test split_instructions("#= setup\ncomment =#\n;echo shell-ok\n") ==
+          ["#= setup\ncomment =#", ";echo shell-ok"]
+    # Trailing comments are kept as a final no-op input.
+    @test split_instructions("x = 1\n# trailing\n") == ["x = 1", "# trailing"]
+    @test split_instructions("# only a comment\n") == ["# only a comment"]
     # A mode prefix at column 0 becomes its own input.
     @test split_instructions(";echo shell-ok\n1 + 1\n") == [";echo shell-ok", "1 + 1"]
     # Blank input produces no cells.

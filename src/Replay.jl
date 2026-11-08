@@ -160,7 +160,9 @@ function _split_instructions(src::AbstractString)
         ast = Base.parse_input_line(buffer; depwarn=false)
         if _is_trivia(ast)
             # No statement yet: keep accumulating so a leading comment stays
-            # attached to the input that follows it.
+            # attached to the input that follows it. This also clears a pending
+            # `:incomplete` from an unterminated block comment that just closed.
+            incomplete = false
             continue
         elseif ast isa Expr && ast.head === :incomplete
             incomplete = true
@@ -171,6 +173,7 @@ function _split_instructions(src::AbstractString)
         buffer = ""
         incomplete = false
     end
+    tail = strip(buffer)
     if incomplete
         ast = Base.parse_input_line(buffer; depwarn=false)
         throw(
@@ -179,6 +182,10 @@ function _split_instructions(src::AbstractString)
                 "bracket or quote:\n" * _incomplete_error(ast),
             ),
         )
+    elseif !isempty(tail)
+        # A trailing comment is still part of the transcript, so replay it as a
+        # no-op input instead of dropping it.
+        push!(cells, tail)
     end
     return cells
 end
