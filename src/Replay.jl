@@ -104,10 +104,33 @@ function _next_mode(cell::AbstractString, current_mode_name::Symbol)
     return nothing
 end
 
+# Recursively remove `LineNumberNode`s from `expr` in place. Unlike
+# `Base.remove_linenums!`, this also clears the line-number slot of macro calls,
+# so `string(expr)` does not contain `#= file:line =#` markers.
+function _strip_linenums!(expr)
+    expr isa Expr || return expr
+    if expr.head === :macrocall &&
+       length(expr.args) >= 2 &&
+       expr.args[2] isa LineNumberNode
+        # `Expr(:macrocall, ...)` reserves its second argument for the line
+        # number, so deleting it would leave an invalid expression. `nothing`
+        # keeps the shape valid and `show` omits it.
+        expr.args[2] = nothing
+    end
+    filter!(arg -> !(arg isa LineNumberNode), expr.args)
+    foreach(_strip_linenums!, expr.args)
+    return expr
+end
+
 @doc raw"""
     @deparse expr
-Create a string from `expr`. It tries to output something similar to we type in Julia REPL.
-If `expr` contains `@comment <message>`, it is transformed into `# <message>`.
+
+Return `expr` as a Julia source string using Julia's own printer, i.e.
+`string(expr)`. `LineNumberNode`s are removed first, so the result contains no
+`#= file:line =#` markers.
+
+The macro does not try to reproduce the exact whitespace or syntax you typed;
+it returns Julia's canonical representation of the parsed expression.
 
 # Examples
 ```jldoctest
@@ -117,32 +140,14 @@ julia> @deparse 1+1
 julia> @deparse sin(1f0+a)
 "sin(1.0f0 + a)"
 
-julia> @deparse f(x) = sin(x)/x  # Sometimes not work as expected
-"f(x) = begin\n        sin(x) / x\n    end\n"
+julia> @deparse f(x) = sin(x)/x
+"f(x) = begin\n        sin(x) / x\n    end"
 ```
 """
 macro deparse(expr)
-    Base.remove_linenums!(expr)
-    lines = map(_deparse_line, split(string(expr), "\n"))
-    text = join(lines, "\n")
-    return length(lines) > 1 ? text * "\n" : text
-end
-
-function _deparse_line(w::AbstractString)
-    # check that line `w` contains a macro expression
-    m = match(r"@", w)
-    if isnothing(m)
-        return w
-    end
-    # Here string object `w` has a form of "<indent>#= ... =# @<macro> ..."
-    # extract <indent>
-    indent = replace(
-        w[begin:match(r"\s?#|$", w).offset],
-        "#" => "", # remove `#`
-    )
-    # remove `#= ... =#`
-    # If `@<macro>` is equal to `@comment`, we replace `@<macro>` with `#`.
-    return indent * replace(w[m.offset:end], "@comment" => "#")
+    expr = deepcopy(expr)
+    _strip_linenums!(expr)
+    return string(expr)
 end
 
 function clearline(; move_up::Bool=false)
